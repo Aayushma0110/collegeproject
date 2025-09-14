@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Signup - Doctor Appointment System</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <h2>Admin Signup</h2>
+    <form id="adminForm" action="/signup-admin" method="POST">
+      <div class="form-group">
+        <label for="a-fullname">Full Name</label>
+        <input type="text" id="a-fullname" name="fullname" required>
+      </div>
+      <div class="form-group">
+        <label for="a-email">Email Address</label>
+        <input type="email" id="a-email" name="email" required>
+      </div>
+      <div class="form-group">
+        <label for="a-username">Username</label>
+        <input type="text" id="a-username" name="username" required>
+      </div>
+      <div class="form-group">
+        <label for="a-password">Password</label>
+        <input type="password" id="a-password" name="password" minlength="8" required>
+      </div>
+      <div class="form-group">
+        <label for="a-confirmPassword">Confirm Password</label>
+        <input type="password" id="a-confirmPassword" name="confirmPassword" minlength="8" required>
+      </div>
+      <div class="form-group">
+        <label for="a-securityQuestion">Security Question</label>
+        <input type="text" id="a-securityQuestion" name="securityQuestion" required>
+      </div>
+      <div class="form-group">
+        <label for="a-securityAnswer">Security Answer</label>
+        <input type="text" id="a-securityAnswer" name="securityAnswer" required>
+      </div>
+      <button type="submit">Sign Up as Admin</button>
+    </form>
+    <div class="footer-text">
+      <p>Already have an account? <a href="/login">Login here</a></p>
+    </div>
+  </div>
+
+  <script src="validate.js"></script>
+</body>
+</html>

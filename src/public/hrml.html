@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Doctor Appointment System - Login</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #e9f0f7;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .login-container {
+      background: white;
+      padding: 2.5rem 3rem;
+      border-radius: 10px;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+      width: 360px;
+    }
+    .login-container h2 {
+      text-align: center;
+      margin-bottom: 2rem;
+      color: #34495e;
+    }
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      color: #2c3e50;
+    }
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    select {
+      width: 100%;
+      padding: 0.6rem 0.8rem;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 1rem;
+      transition: border-color 0.3s ease;
+    }
+    input[type="text"]:focus,
+    input[type="email"]:focus,
+    input[type="password"]:focus,
+    select:focus {
+      border-color: #2980b9;
+      outline: none;
+    }
+    button {
+      width: 100%;
+      padding: 0.75rem;
+      background-color: #2980b9;
+      border: none;
+      border-radius: 5px;
+      color: white;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      background-color: #1c5980;
+    }
+    .footer-text {
+      text-align: center;
+      margin-top: 1.25rem;
+      font-size: 0.9rem;
+      color: #7f8c8d;
+    }
+    .footer-text a {
+      color: #2980b9;
+      text-decoration: none;
+    }
+    .footer-text a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <h2>Login to Doctor Appointment System</h2>
+    <form id="loginForm" action="/login" method="POST">
+      <div class="form-group">
+        <label for="role">Select Role</label>
+        <select id="role" name="role" required>
+          <option value="" disabled selected>-- Choose your role --</option>
+          <option value="patient">Patient</option>
+          <option value="doctor">Doctor</option>
+          <option value="admin">Admin</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="username">Email or Username</label>
+        <input type="text" id="username" name="username" placeholder="Enter your email or username" required />
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" placeholder="Enter your password" required />
+      </div>
+      <button type="submit">Login</button>
+    </form>
+    <div class="footer-text">
+      <p>Don't have an account? <a href="/register">Sign Up</a></p>
+      <p><a href="/forgot-password">Forgot Password?</a></p>
+    </div>
+  </div>
+</body>
+</html>

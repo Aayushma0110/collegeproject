@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Doctor Appointment System - Signup</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #74b9ff, #0984e3);
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      color: #333;
+    }
+    .container {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+      padding: 2.5rem;
+      width: 100%;
+      max-width: 500px;
+      animation: fadeIn 0.5s ease-in;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .tabs {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 2rem;
+      border-bottom: 2px solid #eee;
+    }
+    .tab-button {
+      padding: 0.75rem 1.5rem;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 1.1rem;
+      font-weight: 600;
+      border-radius: 8px 8px 0 0;
+      transition: background-color 0.3s ease, color 0.3s ease;
+      color: #666;
+    }
+    .tab-button.active {
+      background: #2980b9;
+      color: white;
+    }
+    .form-container {
+      display: none;
+    }
+    .form-container.active {
+      display: block;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 1.5rem;
+      color: #2c3e50;
+    }
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      color: #2c3e50;
+    }
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="date"],
+    input[type="number"] {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 1rem;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+      box-sizing: border-box;
+    }
+    input:focus {
+      border-color: #2980b9;
+      outline: none;
+      box-shadow: 0 0 5px rgba(41, 128, 185, 0.5);
+    }
+    button[type="submit"] {
+      width: 100%;
+      padding: 0.75rem;
+      background: #27ae60;
+      border: none;
+      border-radius: 6px;
+      color: white;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+    button[type="submit"]:hover {
+      background: #229954;
+      transform: translateY(-2px);
+    }
+    button[type="submit"]:active {
+      transform: translateY(0);
+    }
+    .footer-text {
+      text-align: center;
+      margin-top: 1.5rem;
+      font-size: 0.9rem;
+      color: #7f8c8d;
+    }
+    .footer-text a {
+      color: #2980b9;
+      text-decoration: none;
+    }
+    .footer-text a:hover {
+      text-decoration: underline;
+    }
+    .error {
+      color: #e74c3c;
+      font-size: 0.9rem;
+      margin-top: 0.5rem;
+    }
+    .success {
+      color: #27ae60;
+      text-align: center;
+      margin-top: 1rem;
+    }
+    /* Responsive Design */
+    @media (max-width: 600px) {
+      .container {
+        padding: 1.5rem;
+      }
+      .tabs {
+        flex-direction: column;
+      }
+      .tab-button {
+        width: 100%;
+        margin-bottom: 0.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="tabs">
+      <button class="tab-button active" onclick="showTab('patient')">Patient Signup</button>
+      <button class="tab-button" onclick="showTab('doctor')">Doctor Signup</button>
+      <button class="tab-button" onclick="showTab('admin')">Admin Signup</button>
+    </div>
+
+    <!-- Patient Form -->
+    <div id="patient" class="form-container active">
+      <h2>Patient Signup</h2>
+      <form id="patientForm" action="/signup-patient" method="POST">
+        <div class="form-group">
+          <label for="p-fullname">Full Name</label>
+          <input type="text" id="p-fullname" name="fullname" placeholder="Enter your full name" required>
+        </div>
+        <div class="form-group">
+          <label for="p-email">Email Address</label>
+          <input type="email" id="p-email" name="email" placeholder="Enter your email" required>
+        </div>
+        <div class="form-group">
+          <label for="p-username">Username</label>
+          <input type="text" id="p-username" name="username" placeholder="Choose a username" required>
+        </div>
+        <div class="form-group">
+          <label for="p-password">Password</label>
+          <input type="password" id="p-password" name="password" placeholder="Create a password (min 8 characters)" required minlength="8">
+        </div>
+        <div class="form-group">
+          <label for="p-confirmPassword">Confirm Password</label>
+          <input type="password" id="p-confirmPassword" name="confirmPassword" placeholder="Confirm your password" required minlength="8">
+        </div>
+        <div class="form-group">
+          <label for="p-dob">Date of Birth</label>
+          <input type="date" id="p-dob" name="dob" required>
+        </div>
+        <div class="form-group">
+          <label for="p-phone">Phone Number</label>
+          <input type="text" id="p-phone" name="phone" placeholder="Enter your phone number" required>
+        </div>
+        <button type="submit">Sign Up as Patient</button>
+      </form>
+      <div class="footer-text">
+        <p>Already have an account? <a href="/login">Login here</a></p>
+      </div>
+    </div>
+
+    <!-- Doctor Form -->
+    <div id="doctor" class="form-container">
+      <h2>Doctor Signup</h2>
+      <form id="doctorForm" action="/signup-doctor" method="POST">
+        <div class="form-group">
+          <label for="d-fullname">Full Name</label>
+          <input type="text" id="d-fullname" name="fullname" placeholder="Enter your full name" required>
+        </div>
+        <div class="form-group">
+          <label for="d-email">Email Address</label>
+          <input type="email" id="d-email" name="email" placeholder="Enter your email" required>
+        </div>
+        <div class="form-group">
+          <label for="d-username">Username</label>
+          <input type="text" id="d-username" name="username" placeholder="Choose a username" required>
+        </div>
+        <div class="form-group">
+          <label for="d-password">Password</label>
+          <input type="password" id="d-password" name="password" placeholder="Create a password (min 8 characters)" required minlength="8">
+        </div>
+        <div class="form-group">
+          <label for="d-confirmPassword">Confirm Password</label>
+          <input type="password" id="d-confirmPassword" name="confirmPassword" placeholder="Confirm your password" required minlength="8">
+        </div>
+        <div class="form-group">
+          <label for="d-specialization">Specialization</label>
+          <input type="text" id="d-specialization" name="specialization" placeholder="e.g. Cardiology, Pediatrics" required>
+        </div>
+        <div class="form-group">
+          <label for="d-license">Medical License Number</label>
+          <input type="text" id="d-license" name="license" placeholder="Enter your license number" required>
+        </div>
+        <div class="form-group">
+          <label for="d-experience">Years of Experience</label>
+          <input type="number" id="d-experience" name="experience" placeholder="e.g. 5" required min="0">
+        </div>
+        <button type="submit">Sign Up as Doctor</button>
+      </form>
+      <div class="footer-text">
+        <p>Already have an account? <a href="/login">Login here</a></p>
+      </div>
+    </div>
+
+    <!-- Admin Form -->
+    <div id="admin" class="form-container">
+      <h2>Admin Signup</h2>
+      <form id="adminForm" action="/signup-admin" method="POST">
+        <div class="form-group">
+          <label for="a-fullname">Full Name</label>
+          <input type="text" id="a-fullname" name="fullname" placeholder="Enter your full name" required>
+        </div>
+        <div class="form-group">
+          <label for="a-email">Email Address</label>
+          <input type="email" id="a-email" name="email" placeholder="Enter your email" required>
+        </div>
+        <div class="form-group">
+          <label for="a-username">Username</label>
+          <input type="text" id="a-username" name="username" placeholder="Choose a username" required>
+        </div>
+        <div class="form-group">
+          <label for="a-password">Password</label>
+          <input type="password" id="a-password" name="password" placeholder="Create a password (min 8 characters)" required minlength="8">
+        </div>
+        <div class="form-group">
+          <label for="a-confirmPassword">Confirm Password</label>
+          <input type="password" id="a-confirmPassword" name="confirmPassword" placeholder="Confirm your password" required minlength="8">
+        </div>
+        <div class="form-group">
+          <label for="a-securityQuestion">Security Question</label>
+          <input type="text" id="a-securityQuestion" name="securityQuestion" placeholder="e.g. What is your favorite color?" required>
+        </div>
+        <div class="form-group">
+          <label for="a-securityAnswer">Security Answer</label>
+          <input type="text" id="a-securityAnswer" name="securityAnswer" placeholder="Answer to your security question" required>
+        </div>
+        <button type="submit">Sign Up as Admin</button>
+      </form>
+      <div class="footer-text">
+        <p>Already have an account? <a href="/login">Login here</a></p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function showTab(tabId) {
+      // Hide all form containers
+      const containers = document.querySelectorAll('.form-container');
+      containers.forEach(container => container.classList.remove('active'));
+
+      // Remove active class from all tab buttons
+      const buttons = document.querySelectorAll('.tab-button');
+      buttons.forEach(button => button.classList.remove('active'));
+
+      // Show the selected tab
+      document.getElementById(tabId).classList.add('active');
+      event.target.classList.add('active');
+    }
+
+    function validatePasswords(formId) {
+      const form = document.getElementById(formId);
+      form.addEventListener('submit', function(e) {
+        const password = form.querySelector('[name="password"]').value;
+        const confirmPassword = form.querySelector('[name="confirmPassword"]').value;
+        if (password !== confirmPassword) {
+          e.preventDefault();
+          alert('Passwords do not match!');
+          return false;
+        }
+      });
+    }
+
+    // Add validation to all forms
+    document.addEventListener('DOMContentLoaded', function() {
+      validatePasswords('patientForm');
+      validatePasswords('doctorForm');
+      validatePasswords('adminForm');
+    });
+  </script>
+</body>
+</html>
+</content>
+</create_file>
