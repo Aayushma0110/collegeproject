@@ -1,18 +1,11 @@
 import express from "express";
-import {
-  getAllHistories,
-  createHistory,
-  getOneHistory,
-  updateHistory,
-  deleteHistory
-} from "../controller/history.controller.js";
+import {getAllHistories,createHistory,getOneHistory,updateHistory,deleteHistory} from "../controller/history.controller.js";
 
 const router = express.Router();
 
-router.post("/", createHistory);       // Create history
-router.get("/", getAllHistories);      // Get all histories
-router.get("/:id", getOneHistory);     // Get single history
-router.put("/:id", updateHistory);     // Update history
-router.delete("/:id", deleteHistory);  // Delete history
-
+router.post("/", createHistory);    
+router.get("/", getAllHistories);     
+router.get("/:id", getOneHistory);   
+router.put("/:id", updateHistory);  
+router.delete("/:id", deleteHistory);  
 export default router;

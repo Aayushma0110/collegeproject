@@ -1,6 +1,6 @@
-import prisma from "../utils/prisma-client.js";
+import prisma from '../utils/prisma-clients.js';
 
-// CREATE Payment
+
 export const createPayment = async (req, res) => {
   try {
     const { appointmentId, amount, method, transactionId } = req.body;
@@ -9,7 +9,6 @@ export const createPayment = async (req, res) => {
       return res.status(400).json({ error: "All fields are required" });
     }
 
-    // check if appointment exists
     const appointment = await prisma.appointment.findUnique({
       where: { id: Number(appointmentId) }
     });
@@ -17,12 +16,17 @@ export const createPayment = async (req, res) => {
       return res.status(404).json({ error: "Appointment not found" });
     }
 
-    // check if already paid
+
     const existing = await prisma.payment.findUnique({
       where: { appointmentId: Number(appointmentId) }
     });
     if (existing) {
       return res.status(400).json({ error: "Payment already exists for this appointment" });
+    }
+
+    const validMethods = ["CASH", "CARD", "STRIPE", "ESEWA", "KHALTI"];
+    if (!validMethods.includes(method)) {
+      return res.status(400).json({ error: "Invalid payment method" });
     }
 
     const payment = await prisma.payment.create({
@@ -31,7 +35,7 @@ export const createPayment = async (req, res) => {
         amount,
         method,
         transactionId,
-        status: "SUCCESS" // mock: in real, set after gateway confirms
+        status: "SUCCESS" 
       }
     });
 
@@ -41,7 +45,7 @@ export const createPayment = async (req, res) => {
   }
 };
 
-// GET All Payments
+
 export const getPayments = async (req, res) => {
   try {
     const payments = await prisma.payment.findMany({
@@ -53,7 +57,7 @@ export const getPayments = async (req, res) => {
   }
 };
 
-// GET Payment by ID
+
 export const getPaymentById = async (req, res) => {
   try {
     const { id } = req.params;
@@ -69,7 +73,7 @@ export const getPaymentById = async (req, res) => {
   }
 };
 
-// UPDATE Payment (status, method)
+
 export const updatePayment = async (req, res) => {
   try {
     const { id } = req.params;
@@ -86,7 +90,7 @@ export const updatePayment = async (req, res) => {
   }
 };
 
-// DELETE Payment
+
 export const deletePayment = async (req, res) => {
   try {
     const { id } = req.params;

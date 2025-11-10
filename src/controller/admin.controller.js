@@ -1,6 +1,6 @@
-import { prisma } from "../utils/prisma-client.js";
+import prisma  from '../utils/prisma-clients.js';
 
-// ------------------- GET DOCTORS PENDING APPROVAL -------------------
+
 export const getPendingDoctors = async (req, res) => {
   try {
     const doctors = await prisma.user.findMany({
@@ -22,11 +22,11 @@ export const getPendingDoctors = async (req, res) => {
   }
 };
 
-// ------------------- VERIFY DOCTOR (APPROVE/REJECT) -------------------
+
 export const verifyDoctor = async (req, res) => {
   try {
     const { id } = req.params;
-    const { status } = req.body; // "APPROVED" or "REJECTED"
+    const { status } = req.body; 
 
     if (!["APPROVED", "REJECTED"].includes(status)) {
       return res.status(400).json({ message: "Invalid status value" });
@@ -43,7 +43,7 @@ export const verifyDoctor = async (req, res) => {
   }
 };
 
-// ------------------- GET ALL APPOINTMENTS -------------------
+
 export const getAllAppointments = async (req, res) => {
   try {
     const appointments = await prisma.appointment.findMany({
@@ -60,7 +60,7 @@ export const getAllAppointments = async (req, res) => {
   }
 };
 
-// ------------------- GET PAYMENTS -------------------
+
 export const getAllPayments = async (req, res) => {
   try {
     const payments = await prisma.payment.findMany({

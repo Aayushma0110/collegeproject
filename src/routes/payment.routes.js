@@ -6,13 +6,13 @@ import {
   updatePayment,
   deletePayment
 } from "../controller/payment.controller.js";
-
+import { auth} from "../middleware/auth.js";
 const router = express.Router();
 
-router.post("/", createPayment);       // Create payment
-router.get("/", getPayments);          // Get all payments
-router.get("/:id", getPaymentById);    // Get single payment
-router.put("/:id", updatePayment);     // Update payment
-router.delete("/:id", deletePayment);  // Delete payment
+router.post("/payment", auth, createPayment);    
+router.get("/payments", auth, getPayments);        
+router.get("/payments/:id", auth, getPaymentById);    
+router.put("/payments/:id/status", auth, updatePayment);  
+router.delete("/payments/:id", auth, deletePayment);  
 
 export default router;

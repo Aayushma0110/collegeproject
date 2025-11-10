@@ -1,8 +1,7 @@
 
-import { prisma } from "../utils/prisma-client.js";
+import  prisma  from '../utils/prisma-clients.js';
 
-// 1. GET /api/doctors
-// List all doctors with optional filters
+
 export const getDoctors = async (req, res) => {
   try {
     const { specialty, minRating, maxFees } = req.query;
@@ -31,8 +30,7 @@ export const getDoctors = async (req, res) => {
   }
 };
 
-// 2. GET /api/doctors/:id
-// Get single doctor profile
+
 export const getDoctorById = async (req, res) => {
   try {
     const { id } = req.params;
@@ -62,8 +60,7 @@ export const getDoctorById = async (req, res) => {
   }
 };
 
-// 3. PUT /api/doctors/me/availability
-// Update availability JSON for logged-in doctor
+
 export const updateAvailability = async (req, res) => {
   try {
     const doctorId = req.user.id;

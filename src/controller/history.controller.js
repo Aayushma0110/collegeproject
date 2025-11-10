@@ -1,19 +1,5 @@
-// import { prisma } from '../utils/prisma-client.js';
+import prisma from '../utils/prisma-clients.js';
 
-const getAllHistories = async (req, res) => {
-    try {
-        const histories = await prisma.history.findMany({
-            include: {
-                patient: true,  // if you have relation with patient
-                doctor: true    // if you have relation with doctor
-            }
-        });
-        res.status(200).json(histories);
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Internal Server Error' });
-    }
-};
 
 const createHistory = async (req, res) => {
     try {
@@ -34,6 +20,21 @@ const createHistory = async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 };
+const getAllHistories = async (req, res) => {
+    try {
+        const histories = await prisma.history.findMany({
+            include: {
+                patient: true,  
+                doctor: true    
+            }
+        });
+        res.status(200).json(histories);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+};
+
 
 const getOneHistory = async (req, res) => {
     try {
@@ -87,17 +88,11 @@ const deleteHistory = async (req, res) => {
                 id: parseInt(id)
             }
         });
-        res.status(204).send(); // No content
+        res.status(204).send(); 
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Internal Server Error' });
     }
 };
 
-export {
-    getAllHistories,
-    createHistory,
-    getOneHistory,
-    updateHistory,
-    deleteHistory,
-};
+export { getAllHistories,createHistory,getOneHistory,updateHistory,deleteHistory,};

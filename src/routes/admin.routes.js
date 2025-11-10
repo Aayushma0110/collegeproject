@@ -1,18 +1,16 @@
 import express from "express";
-import {
-  getPendingDoctors,
-  verifyDoctor,
-  getAllAppointments,
-  getAllPayments,
-} from "../controllers/admin.controller.js";
-import { isAdmin } from "../middlewares/admin.js";
+import { isAdmin } from "../middleware/admin.js";
+import { auth } from "../middleware/auth.js";
+
+import {getPendingDoctors,verifyDoctor,getAllAppointments,getAllPayments,} from "../controller/admin.controller.js";
+
 
 const router = express.Router();
 
-// Admin routes (protected)
-router.get("/doctors", isAdmin, getPendingDoctors);
-router.put("/doctors/:id/verify", isAdmin, verifyDoctor);
-router.get("/appointments", isAdmin, getAllAppointments);
-router.get("/payments", isAdmin, getAllPayments);
+
+router.get("/admin/doctor", auth,isAdmin,getPendingDoctors);
+router.put("/admin/doctor/:id/verify", auth,isAdmin, verifyDoctor);
+router.get("/admin/appointments", auth,isAdmin, getAllAppointments);
+router.get("/admin/payments", auth, isAdmin,getAllPayments);
 
 export default router;

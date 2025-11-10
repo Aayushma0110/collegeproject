@@ -1,5 +1,5 @@
 import { verifyToken } from "../utils/json.js";
-import { prisma } from "../utils/prisma-client.js";
+import prisma  from "../utils/prisma-clients.js";
 
 const auth = async (req, res, next) => {
     const authHeader = req.headers.authorization;
@@ -25,8 +25,8 @@ const auth = async (req, res, next) => {
     } catch (error) {
         console.log(error);
         res.status(401).json({ message: "Unauthorized" });
-    }
+    } 
 
 };
 
-export { auth }
+export { auth ,verifyToken}

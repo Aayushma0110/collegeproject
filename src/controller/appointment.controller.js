@@ -1,20 +1,18 @@
-import prisma from "../utils/prisma-client.js";
+import prisma from '../utils/prisma-clients.js';
 
-// CREATE Appointment
+
 export const createAppointment = async (req, res) => {
   try {
-    const { patientId, doctorId, date, time } = req.body;
+    const { patientId, doctorId, scheduledAt } = req.body;
 
-    if (!patientId || !doctorId || !date || !time) {
+    if (!patientId || !doctorId || !scheduledAt) {
       return res.status(400).json({ error: "All fields are required" });
     }
 
-    // Check if doctor is already booked
     const existing = await prisma.appointment.findFirst({
       where: {
         doctorId,
-        date: new Date(date),
-        time
+        scheduledAt: new Date(scheduledAt),
       }
     });
 
@@ -23,7 +21,7 @@ export const createAppointment = async (req, res) => {
     }
 
     const appointment = await prisma.appointment.create({
-      data: { patientId, doctorId, date: new Date(date), time }
+      data: { patientId, doctorId, scheduledAt: new Date(scheduledAt) }
     });
 
     res.json({ message: "Appointment created successfully", appointment });
@@ -32,7 +30,7 @@ export const createAppointment = async (req, res) => {
   }
 };
 
-// GET all Appointments
+
 export const getAppointments = async (req, res) => {
   try {
     const appointments = await prisma.appointment.findMany({
@@ -44,7 +42,7 @@ export const getAppointments = async (req, res) => {
   }
 };
 
-// GET Appointment by ID
+
 export const getAppointmentById = async (req, res) => {
   try {
     const { id } = req.params;
@@ -60,15 +58,15 @@ export const getAppointmentById = async (req, res) => {
   }
 };
 
-// UPDATE Appointment (status, date, time)
+
 export const updateAppointment = async (req, res) => {
   try {
     const { id } = req.params;
-    const { date, time, status } = req.body;
+    const { scheduledAt, status } = req.body;
 
     const appointment = await prisma.appointment.update({
       where: { id: Number(id) },
-      data: { date: date ? new Date(date) : undefined, time, status }
+      data: { scheduledAt: scheduledAt ? new Date(scheduledAt) : undefined, status }
     });
 
     res.json({ message: "Appointment updated successfully", appointment });
@@ -77,7 +75,7 @@ export const updateAppointment = async (req, res) => {
   }
 };
 
-// DELETE Appointment
+
 export const deleteAppointment = async (req, res) => {
   try {
     const { id } = req.params;
