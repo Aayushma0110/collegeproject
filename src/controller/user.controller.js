@@ -105,6 +105,11 @@ export const createUser = async (req, res) => {
     res.status(500).json({ error: 'Internal server error', details: error.message });
   }
 };
+//function clean(obj) {
+//   return Object.fromEntries(Object.entries(obj).filter(([,v]) => v !== undefined));
+// }
+//await prisma.user.create({ data: clean(payload) });
+
 
 export const getAllUsers = async (req, res) => {
   try {
@@ -114,8 +119,8 @@ export const getAllUsers = async (req, res) => {
         name: true,
         email: true,
         role: true,
-        phone_number: true,
-        profile_picture: true
+        phonenumber: true,
+        profile_picture: true,
       }
     });
     res.status(200).json(users);

@@ -19,8 +19,8 @@ model User {
   email    String @unique
   password String
   role     Role
-  phone_number    String?
-  profile_picture String?
+phoneNumber  String? 
+  profilePicture String?
 
 
   // Patient fields
