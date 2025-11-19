@@ -6,9 +6,9 @@ import { auth } from "../middleware/auth.js";
 
 const router = express.Router();
 
-router.get("/doctor", getDoctors); 
-router.get("/doctor/:id", getDoctorById); 
-router.put("/doctor/me/availability", verifyToken, isDoctor, updateAvailability); 
+router.get("/", getDoctors); 
+router.get("/:id", getDoctorById); 
+router.put("/me/availability", verifyToken, isDoctor, updateAvailability); 
 
 export default router;
 

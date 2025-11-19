@@ -1,0 +1,11 @@
+echo "node_modules/" 
+# echo "backend/node_modules/" 
+
+.env
+
+/src/generated/prisma
+
+/src/generated/prisma
+
+/src/generated/prisma
+node_modules

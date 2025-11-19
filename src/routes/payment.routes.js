@@ -5,7 +5,7 @@ import {
   getPaymentById,
   updatePayment,
   deletePayment
-} from "../controller/payment.controller.js";
+} from "..controller/payment.controller.js";
 import { auth} from "../middleware/auth.js";
 const router = express.Router();
 

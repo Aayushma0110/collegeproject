@@ -19,9 +19,8 @@ model User {
   email    String @unique
   password String
   role     Role
-phoneNumber  String? 
+  phoneNumber String?
   profilePicture String?
-
 
   // Patient fields
   dateOfBirth    DateTime?
@@ -34,7 +33,7 @@ phoneNumber  String?
   fees         Float?
   ratings      Float?
   availability Json?
-  status       DoctorStatus? @default(PENDING)
+  status       DoctorStatus @default(PENDING)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -67,10 +66,10 @@ model Payment {
   method        PaymentMethod
   status        PaymentStatus  @default(PENDING)
   transactionId String?
+  appointment   Appointment    @relation(fields: [appointmentId], references: [id])
   appointmentId Int            @unique
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
-  appointment   Appointment    @relation(fields: [appointmentId], references: [id])
 }
 
 enum Role {
