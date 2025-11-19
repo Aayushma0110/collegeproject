@@ -1,6 +1,7 @@
 import { verifyToken } from "../utils/json.js";
 import prisma  from "../utils/prisma-clients.js";
 
+
 const auth = async (req, res, next) => {
     const authHeader = req.headers.authorization;
     const token = authHeader && authHeader.split(" ")[1];

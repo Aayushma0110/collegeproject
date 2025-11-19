@@ -2,7 +2,7 @@
 import express from "express";
 import { getDoctors, getDoctorById, updateAvailability } from "../controller/doctor.controller.js";
 import { isDoctor } from "../middleware/doctor.js";
-import { verifyToken} from "../middleware/auth.js";
+import { auth } from "../middleware/auth.js";
 
 const router = express.Router();
 
