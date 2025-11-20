@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -14,62 +8,52 @@ datasource db {
 }
 
 model User {
-  id       Int    @id @default(autoincrement())
-  name     String
-  email    String @unique
-  password String
-  role     Role
-  phoneNumber String?
-  profilePicture String?
-
-  // Patient fields
-  dateOfBirth    DateTime?
-  gender         String?
-  medicalHistory String?
-
-  // Doctor fields
-  specialty    String?
-  experience   Int?
-  fees         Float?
-  ratings      Float?
-  availability Json?
-  status       DoctorStatus @default(PENDING)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  patientAppointments Appointment[] @relation("PatientAppointments")
+  id                  Int           @id @default(autoincrement())
+  name                String
+  email               String        @unique
+  password            String
+  dateOfBirth         DateTime?
+  gender              String?
+  medicalHistory      String?
+  specialty           String?
+  experience          Int?
+  fees                Float?
+  ratings             Float?
+  availability        Json?
+  createdAt           DateTime      @default(now())
+  updatedAt           DateTime      @updatedAt
+  status              DoctorStatus  @default(PENDING)
+  role                Role
+  phoneNumber         String[]      @db.Char
+  profilePicture_     String[]      @map("  profilePicture ") @db.Char
   doctorAppointments  Appointment[] @relation("DoctorAppointments")
+  patientAppointments Appointment[] @relation("PatientAppointments")
 }
 
 model Appointment {
-  id              Int        @id @default(autoincrement())
-  scheduledAt     DateTime
-  duration        Int?
-  mode            Mode       @default(IN_PERSON)
-  status          Status     @default(PENDING)
-
-  patient   User  @relation("PatientAppointments", fields: [patientId], references: [id])
-  patientId Int
-
-  doctor    User  @relation("DoctorAppointments", fields: [doctorId], references: [id])
-  doctorId  Int
-
-  payment   Payment?
-
-  createdAt DateTime @default(now())
+  id          Int      @id @default(autoincrement())
+  mode        Mode     @default(IN_PERSON)
+  status      Status   @default(PENDING)
+  patientId   Int
+  doctorId    Int
+  createdAt   DateTime @default(now())
+  duration    Int?
+  scheduledAt DateTime
+  doctor      User     @relation("DoctorAppointments", fields: [doctorId], references: [id])
+  patient     User     @relation("PatientAppointments", fields: [patientId], references: [id])
+  payment     Payment?
 }
 
 model Payment {
-  id            Int            @id @default(autoincrement())
+  id            Int           @id @default(autoincrement())
   amount        Float
   method        PaymentMethod
-  status        PaymentStatus  @default(PENDING)
+  status        PaymentStatus @default(PENDING)
   transactionId String?
-  appointment   Appointment    @relation(fields: [appointmentId], references: [id])
-  appointmentId Int            @unique
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
+  appointmentId Int           @unique
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  appointment   Appointment   @relation(fields: [appointmentId], references: [id])
 }
 
 enum Role {
@@ -110,4 +94,3 @@ enum DoctorStatus {
   APPROVED
   REJECTED
 }
-

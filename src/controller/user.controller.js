@@ -1,22 +1,7 @@
 import prisma from '../utils/prisma-clients.js'
 import { generateToken } from '../utils/json.js';
 import bcrypt from 'bcrypt';
-// import fs from 'fs';
-// import path from 'path';
-// const uploadDir = path.join(process.cwd(), 'upload');
 
-// // Helper function for file upload (stub, implement as needed)
-// async function saveProfilePicture(file, allowedMimes) {
-//   if (!file) return null;
-//   if (!allowedMimes.includes(file.mimetype)) {
-//     throw new Error('Invalid file type');
-//   }
-//   const fileName = Date.now() + '_' + file.name;
-//   const filePath = path.join(uploadDir, fileName);
-//   await fs.promises.mkdir(uploadDir, { recursive: true });
-//   await fs.promises.writeFile(filePath, file.data);
-//   return `/upload/${fileName}`;
-// }
 
 const getAllUsers = async (req, res) => {
   try {
@@ -33,6 +18,31 @@ const getAllUsers = async (req, res) => {
     console.log(error);
     res.status(500).json({ error: 'Internal server error' });
   }
+};
+export const getMyAppointmentHistory = async (req, res) => {
+    const userId = req.user.id;
+    const userRole = req.user.role;
+
+    let whereCondition = {};
+    if (userRole === 'PATIENT') {
+        whereCondition = { patientId: userId };
+    } else if (userRole === 'DOCTOR') {
+        whereCondition = { doctorId: userId };
+    } else {
+        // Admins can see all appointments, or you can restrict this
+        whereCondition = {}; 
+    }
+
+    const appointments = await prisma.appointment.findMany({
+        where: whereCondition,
+        include: {
+            doctor: { select: { name: true, specialty: true } },
+            patient: { select: { name: true } }
+        },
+        orderBy: { scheduledAt: 'desc' }
+    });
+
+    res.json(appointments);
 };
 
 const createUser = async (req, res) => {

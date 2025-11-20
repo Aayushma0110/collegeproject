@@ -8,9 +8,10 @@ import {getPendingDoctors,verifyDoctor,getAllAppointments,getAllPayments,} from 
 const router = express.Router();
 
 
-router.get("/admin/doctor", auth,isAdmin,getPendingDoctors);
-router.put("/admin/doctor/:id/verify", auth,isAdmin, verifyDoctor);
-router.get("/admin/appointments", auth,isAdmin, getAllAppointments);
-router.get("/admin/payments", auth, isAdmin,getAllPayments);
+// Pseudo-solution for admin.routes.js
+router.get("/doctors/pending", auth, isAdmin, getPendingDoctors);
+router.put("/doctors/:id/verify", auth, isAdmin, verifyDoctor);
+router.get("/appointments", auth, isAdmin, getAllAppointments);
+router.get("/payments", auth, isAdmin, getAllPayments);
 
 export default router;

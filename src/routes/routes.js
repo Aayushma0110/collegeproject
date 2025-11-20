@@ -6,7 +6,7 @@ import doctorRoutes from "../routes/doctor.routes.js";
 import appointmentRoutes from "../routes/appointment.routes.js";
 import paymentRoutes from "../routes/payment.routes.js";
 import adminRoutes from "../routes/admin.routes.js";
-
+import patientRoutes from "./patient.routes.js";
 const router = express.Router();
 
 router.use("/users", userRoutes);
@@ -14,6 +14,8 @@ router.use("/doctors", doctorRoutes);
 router.use("/appointments", appointmentRoutes);
 router.use("/payments", paymentRoutes);
 router.use("/admin", adminRoutes);
+router.use("/patients", patientRoutes);
+router.use("/reviews", reviewRoutes);
 
 
 export default router;

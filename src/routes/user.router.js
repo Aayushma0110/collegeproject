@@ -13,6 +13,7 @@ router.put("/:id", updateUser);
 router.delete("/:id", deleteUser);
 
 router.get("/me", auth, getProfile);
+router.get("/me/appointments", auth, getMyAppointmentHistory); 
 router.put("/me", auth, profileUpdate);
 
 
