@@ -28,6 +28,8 @@ model User {
   profilePicture_     String[]      @map("  profilePicture ") @db.Char
   doctorAppointments  Appointment[] @relation("DoctorAppointments")
   patientAppointments Appointment[] @relation("PatientAppointments")
+   reviewsGiven    Review[] @relation("ReviewsGiven")
+  reviewsReceived Review[] @relation("ReviewsReceived")
 }
 
 model Appointment {
@@ -42,6 +44,7 @@ model Appointment {
   doctor      User     @relation("DoctorAppointments", fields: [doctorId], references: [id])
   patient     User     @relation("PatientAppointments", fields: [patientId], references: [id])
   payment     Payment?
+  review      Review?
 }
 
 model Payment {
@@ -54,6 +57,22 @@ model Payment {
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
   appointment   Appointment   @relation(fields: [appointmentId], references: [id])
+}
+model Review {
+  id            Int      @id @default(autoincrement())
+  rating        Int      // A rating from 1 to 5
+  comment       String?
+  
+  appointment   Appointment @relation(fields: [appointmentId], references: [id])
+  appointmentId Int      @unique // One review per appointment
+
+  reviewer      User     @relation("ReviewsGiven", fields: [reviewerId], references: [id])
+  reviewerId    Int      // The patient who wrote the review
+
+  doctor        User     @relation("ReviewsReceived", fields: [doctorId], references: [id])
+  doctorId      Int      // The doctor being reviewed
+
+  createdAt     DateTime @default(now())
 }
 
 enum Role {

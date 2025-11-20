@@ -8,7 +8,7 @@ const router = express.Router();
 
 router.get("/", getDoctors); 
 router.get("/:id", getDoctorById); 
-router.put("/me/availability", verifyToken, isDoctor, updateAvailability); 
-
+// Pseudo-solution for doctor.routes.js
+router.put("/me/availability", auth, isDoctor, updateAvailability); 
 export default router;
 
