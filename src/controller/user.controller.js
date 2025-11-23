@@ -75,9 +75,9 @@ const createUser = async (req, res) => {
 
     const user = await prisma.user.create({
       data: {
-        name: body.name,
-        email: body.email,
-        phoneNumber: body.phoneNumber,
+        name: user.name,
+        email: user.email,
+        phoneNumber: user.phoneNumber,
         password: hashedPassword,
         profilePicture: fileUri,
         role: body.role // Make sure this is present and valid
