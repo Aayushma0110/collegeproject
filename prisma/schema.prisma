@@ -12,25 +12,33 @@ model User {
   name                String
   email               String        @unique
   password            String
+
   dateOfBirth         DateTime?
   gender              String?
   medicalHistory      String?
+
   specialty           String?
   experience          Int?
   fees                Float?
   ratings             Float?
-  availability        Json?
+  availability        Json?  
+  scheduledAt         DateTime?
+
   createdAt           DateTime      @default(now())
   updatedAt           DateTime      @updatedAt
+
   status              DoctorStatus  @default(PENDING)
   role                Role
-  phoneNumber         String[]      @db.Char
-  profilePicture_     String[]      @map("  profilePicture ") @db.Char
+
+  phoneNumber         String[]
+  profilePicture_     String[]
+
   doctorAppointments  Appointment[] @relation("DoctorAppointments")
   patientAppointments Appointment[] @relation("PatientAppointments")
-   reviewsGiven    Review[] @relation("ReviewsGiven")
-  reviewsReceived Review[] @relation("ReviewsReceived")
+  reviewsGiven        Review[]       @relation("ReviewsGiven")
+  reviewsReceived     Review[]       @relation("ReviewsReceived")
 }
+
 
 model Appointment {
   id          Int      @id @default(autoincrement())

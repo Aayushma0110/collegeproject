@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Register - Doctor Appointment</title>
+<link rel="stylesheet" href="../../styles/global.css">
+</head>
+<body>
+<div class="container">
+    <h2>Register</h2>
+    <div class="card">
+        <div class="form-group">
+            <label>Name</label>
+            <input type="text" id="name" placeholder="Full Name">
+        </div>
+        <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="email" placeholder="Email">
+        </div>
+        <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="password" placeholder="Password">
+        </div>
+        <div class="form-group">
+            <label>Role</label>
+            <select id="role">
+                <option value="PATIENT">Patient</option>
+                <option value="DOCTOR">Doctor</option>
+            </select>
+        </div>
+        <button class="primary" id="registerBtn">Register</button>
+    </div>
+</div>
+
+<script type="module">
+    document.getElementById("registerBtn").addEventListener("click", async ()=>{
+        const name=document.getElementById("name").value;
+        const email=document.getElementById("email").value;
+        const password=document.getElementById("password").value;
+        const role=document.getElementById("role").value;
+
+        const res=await fetch("http://localhost:5000/api/auth/register",{
+            method:"POST",
+            headers:{"Content-Type":"application/json"},
+            body:JSON.stringify({name,email,password,role})
+        });
+        const data=await res.json();
+        if(data.success){
+            alert("Registered successfully");
+            window.location.href="login.html";
+        } else {
+            alert(data.message||"Registration failed");
+        }
+    });
+</script>
+</body>
+</html>
