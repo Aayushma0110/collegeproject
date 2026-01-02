@@ -24,9 +24,10 @@ export const registerDoctor = async (req, res) => {
         email,
         password: hashedPassword,
         role: "DOCTOR",
+        isApproved: true||false,
         specialty,
-        phoneNumber: phone,
-        isApproved: false
+        phoneNumber: phone ? [phone] : [],
+        status: "PENDING"
       }
     });
 
@@ -43,7 +44,8 @@ export const registerDoctor = async (req, res) => {
         id: doctor.id,
         name: doctor.name,
         email: doctor.email,
-        specialty: doctor.specialty
+        specialty: doctor.specialty,
+        isApproved: true
       }
     });
   } catch (err) {
@@ -70,7 +72,7 @@ export const doctorLogin = async (req, res) => {
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
-    if (!doctor.isApproved) {
+    if (doctor.status !== "APPROVED") {
       return res.status(403).json({ message: "Doctor not approved yet" });
     }
 

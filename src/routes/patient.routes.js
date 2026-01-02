@@ -4,8 +4,8 @@ import { auth} from "../middleware/auth.js";
 const router = express.Router();
 
 // router.post("/", createPatient);      
-router.get("/", getPatients);         
+router.get("/", auth, getPatients);         
 // router.get("/:id", getPatientById);    
-router.put("/:id", updatePatients);      
+router.put("/:id", auth, updatePatients);      
 // router.delete("/:id", deletePatient);   
 export default router;

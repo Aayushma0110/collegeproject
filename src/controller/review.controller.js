@@ -52,38 +52,35 @@ export const createReview = async (req, res) => {
     }
 
     //  to Create the review 
-    // to recalculate & update doctor's average rating in a transaction
-    const [createdReview, ratingAgg] = await prisma.$transaction([
-      prisma.review.create({
-        data: {
-          appointmentId,
-          patientId,
-          doctorId,
-          rating,
-          comment: comment ?? null,
-        },
-        include: {
-          //  it include patient basic information  if helpful 
-          patient: { select: { id: true, name: true, email: true } },
-        },
-      }),
-      // Immediately compute new average (we'll run an aggregate in same tx)
-      // NOTE: prisma transactions do not allow aggregate after create referencing same model in some older versions,
-      // but using two queries inside $transaction will usually work. If it fails in your Prisma version, run them sequentially.
-      prisma.review.aggregate({
-        where: { doctorId },
-        _avg: { rating: true },
-        _count: { id: true },
-      }),
-    ]);
+    // to recalculate & update doctor's average rating
+    const createdReview = await prisma.review.create({
+      data: {
+        appointmentId,
+        reviewerId: patientId,
+        doctorId,
+        rating,
+        comment: comment ?? null,
+      },
+      include: {
+        //  it include patient basic information  if helpful 
+        patient: { select: { id: true, name: true, email: true } },
+      },
+    });
+
+    // Calculate new average rating for the doctor
+    const ratingAgg = await prisma.review.aggregate({
+      where: { doctorId },
+      _avg: { rating: true },
+      _count: { id: true },
+    });
 
     // ratingAgg._avg.rating is the new average across all reviews for the doctor
     const newAvg = ratingAgg._avg && ratingAgg._avg.rating ? Number(ratingAgg._avg.rating.toFixed(2)) : rating;
 
-    // Update doctor's averageRating field (if you store it)
-    await prisma.doctor.update({
+    // Update doctor's ratings field
+    await prisma.user.update({
       where: { id: doctorId },
-      data: { averageRating: newAvg },
+      data: { ratings: newAvg },
     });
 
     return res.status(201).json({
@@ -115,26 +112,26 @@ export const getDoctorReviews = async (req, res) => {
     // code for fetch reviews + patient info (and appointment info if needed)
     const [reviews, total] = await Promise.all([
       prisma.review.findMany({
-        where: { doctorId },
+        where: { doctorId: Number(doctorId) },
         orderBy: { createdAt: 'desc' },
         skip,
         take: perPage,
         include: {
-          patient: { select: { id: true, name: true, profile_picture: true } },
-          appointment: { select: { id: true, date: true } }, // optional
+          patient: { select: { id: true, name: true, profilePicture_: true } },
+          appointment: { select: { id: true, scheduledAt: true } }, // optional
         },
       }),
-      prisma.review.count({ where: { doctorId } }),
+      prisma.review.count({ where: { doctorId: Number(doctorId) } }),
     ]);
 
     // it is Also used as  optionally include the stored averageRating from doctor
-    const doctor = await prisma.doctor.findUnique({
+    const doctor = await prisma.user.findUnique({
       where: { id: doctorId },
-      select: { id: true, averageRating: true },
+      select: { id: true, ratings: true },
     });
 
     return res.json({
-      doctor: doctor ? { id: doctor.id, averageRating: doctor.averageRating } : null,
+      doctor: doctor ? { id: doctor.id, ratings: doctor.ratings } : null,
       meta: {
         total,
         page,

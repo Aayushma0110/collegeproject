@@ -9,10 +9,10 @@ import {
 import { auth} from "../middleware/auth.js";
 const router = express.Router();
 
-router.post("/payments", auth, createPayment);    
-router.get("/payments", auth, getPayments);        
-router.get("/payments/:id", auth, getPaymentById);    
-router.put("/payments/:id/status", auth, updatePayment);  
-router.delete("/payments/:id", auth, deletePayment);  
+router.post("/", auth, createPayment);    
+router.get("/", auth, getPayments);        
+router.get("/:id", auth, getPaymentById);    
+router.put("/:id", auth, updatePayment);  
+router.delete("/:id", auth, deletePayment);  
 
 export default router;

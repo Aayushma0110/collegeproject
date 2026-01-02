@@ -80,3 +80,17 @@ export const getAllPayments = async (req, res) => {
     res.status(500).json({ message: "Error fetching payments", error: error.message });
   }
 };
+export const approveDoctor = async (req, res) => {
+  const doctorId = Number(req.params.id);
+
+  const doctor = await prisma.user.update({
+    where: { id: doctorId },
+    data: { isApproved: true }
+  });
+
+  res.json({
+    message: "Doctor approved successfully",
+    doctor
+  });
+};
+

@@ -29,7 +29,7 @@ model User {
 
   status              DoctorStatus  @default(PENDING)
   role                Role
-
+  isApproved          Boolean  
   phoneNumber         String[]
   profilePicture_     String[]
 

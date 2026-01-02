@@ -1,4 +1,4 @@
-import prisma from '../utils/prisma-clients.js';
+import prisma from "../utils/prisma-clients.js";
 
 // CREATE Appointment
 export const createAppointment = async (req, res) => {
@@ -6,40 +6,54 @@ export const createAppointment = async (req, res) => {
     const { doctorId, scheduledAt } = req.body;
 
     if (!doctorId || !scheduledAt) {
-      return res.status(400).json({ message: "doctorId and scheduledAt are required" });
+      return res
+        .status(400)
+        .json({ message: "doctorId and scheduledAt are required" });
+    }
+
+    const doctorIdInt = Number(doctorId);
+    if (isNaN(doctorIdInt)) {
+      return res.status(400).json({ message: "doctorId must be a number" });
     }
 
     const parsedDate = new Date(scheduledAt);
     if (isNaN(parsedDate)) {
       return res.status(400).json({
-        message: "Invalid scheduledAt format. Use ISO 8601 (e.g., 2025-12-30T10:00:00.000Z)"
+        message:
+          "Invalid scheduledAt format. Use ISO 8601 (e.g., 2025-12-30T10:00:00.000Z)",
       });
     }
 
     // Ensure doctor exists and approved
-    const doctor = await prisma.user.findUnique({ where: { id: doctorId } });
-    if (!doctor || doctor.status !== "APPROVED") {
-      return res.status(403).json({ message: "Doctor is not approved or does not exist" });
+    
+    const doctor = await prisma.user.findUnique({ where: { id: doctorIdInt } });
+    if (!doctor || doctor.isApproved !== true) {
+      return res
+        .status(403)
+        .json({ message: "Doctor is not approved or does not exist" });
     }
 
     // Check for conflicts
     const existing = await prisma.appointment.findFirst({
-      where: { doctorId, scheduledAt: parsedDate }
+      where: { doctorId: doctorIdInt, scheduledAt: parsedDate },
     });
     if (existing) {
-      return res.status(400).json({ message: "Doctor already booked at this time" });
+      return res
+        .status(400)
+        .json({ message: "Doctor already booked at this time" });
     }
 
     const appointment = await prisma.appointment.create({
       data: {
         patientId: req.user.id,
-        doctorId,
-        scheduledAt: parsedDate
-      }
+        doctorId: doctorIdInt,
+        scheduledAt: parsedDate,
+      },
     });
 
-    res.status(201).json({ message: "Appointment created successfully", appointment });
-
+    res
+      .status(201)
+      .json({ message: "Appointment created successfully", appointment });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: error.message });
@@ -57,16 +71,18 @@ export const getAppointments = async (req, res) => {
       appointments = await prisma.appointment.findMany({
         include: {
           doctor: { select: { id: true, name: true, specialty: true } },
-          patient: { select: { id: true, name: true, email: true } }
+          patient: { select: { id: true, name: true, email: true } },
         },
-        orderBy: { scheduledAt: 'asc' }
+        orderBy: { scheduledAt: "asc" },
       });
     } else {
       // Patient can see only their own appointments
       appointments = await prisma.appointment.findMany({
         where: { patientId: user.id },
-        include: { doctor: { select: { id: true, name: true, specialty: true } } },
-        orderBy: { scheduledAt: 'asc' }
+        include: {
+          doctor: { select: { id: true, name: true, specialty: true } },
+        },
+        orderBy: { scheduledAt: "asc" },
       });
     }
 
@@ -87,8 +103,8 @@ export const getAppointmentById = async (req, res) => {
       where: { id },
       include: {
         doctor: { select: { id: true, name: true, specialty: true } },
-        patient: { select: { id: true, name: true, email: true } }
-      }
+        patient: { select: { id: true, name: true, email: true } },
+      },
     });
 
     if (!appointment) {
@@ -115,7 +131,9 @@ export const updateAppointment = async (req, res) => {
     const user = req.user;
 
     if (!scheduledAt) {
-      return res.status(400).json({ message: "scheduledAt is required to update" });
+      return res
+        .status(400)
+        .json({ message: "scheduledAt is required to update" });
     }
 
     const parsedDate = new Date(scheduledAt);
@@ -124,7 +142,8 @@ export const updateAppointment = async (req, res) => {
     }
 
     const appointment = await prisma.appointment.findUnique({ where: { id } });
-    if (!appointment) return res.status(404).json({ message: "Appointment not found" });
+    if (!appointment)
+      return res.status(404).json({ message: "Appointment not found" });
 
     // Only patient who booked or admin can update
     if (user.role !== "ADMIN" && appointment.patientId !== user.id) {
@@ -133,18 +152,25 @@ export const updateAppointment = async (req, res) => {
 
     // Check doctor availability
     const conflict = await prisma.appointment.findFirst({
-      where: { doctorId: appointment.doctorId, scheduledAt: parsedDate }
+      where: { doctorId: appointment.doctorId, scheduledAt: parsedDate },
     });
     if (conflict) {
-      return res.status(400).json({ message: "Doctor already booked at this time" });
+      return res
+        .status(400)
+        .json({ message: "Doctor already booked at this time" });
     }
 
     const updated = await prisma.appointment.update({
       where: { id },
-      data: { scheduledAt: parsedDate }
+      data: { scheduledAt: parsedDate },
     });
 
-    res.status(200).json({ message: "Appointment updated successfully", appointment: updated });
+    res
+      .status(200)
+      .json({
+        message: "Appointment updated successfully",
+        appointment: updated,
+      });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: error.message });
@@ -158,7 +184,8 @@ export const deleteAppointment = async (req, res) => {
     const user = req.user;
 
     const appointment = await prisma.appointment.findUnique({ where: { id } });
-    if (!appointment) return res.status(404).json({ message: "Appointment not found" });
+    if (!appointment)
+      return res.status(404).json({ message: "Appointment not found" });
 
     // Only patient who booked or admin can delete
     if (user.role !== "ADMIN" && appointment.patientId !== user.id) {
