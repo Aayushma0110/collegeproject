@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Describe Your Problem - Doctor Appointment</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <style>
+        .problem-container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+        .section {
+            background: white;
+            padding: 30px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .section h2 {
+            margin-top: 0;
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .disease-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .disease-card {
+            border: 2px solid #e0e0e0;
+            padding: 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .disease-card:hover {
+            border-color: #3498db;
+            background: #f8f9fa;
+        }
+        .disease-card.selected {
+            border-color: #3498db;
+            background: #e3f2fd;
+        }
+        .disease-card h3 {
+            margin: 0 0 10px 0;
+            font-size: 16px;
+            color: #2c3e50;
+        }
+        .symptom-list {
+            display: none;
+            margin-top: 15px;
+        }
+        .symptom-list.active {
+            display: block;
+        }
+        .symptom-item {
+            padding: 8px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .symptom-item:hover {
+            background: #f0f0f0;
+        }
+        .symptom-item.selected {
+            background: #4CAF50;
+            color: white;
+            border-color: #4CAF50;
+        }
+        .selected-summary {
+            background: #fff3cd;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .selected-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .tag {
+            background: #3498db;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+        .btn-primary {
+            background: #3498db;
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 5px;
+            font-size: 18px;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.3s;
+        }
+        .btn-primary:hover {
+            background: #2980b9;
+        }
+        .btn-primary:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
+        }
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #7f8c8d;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <h1>🏥 Doctor Appointment System</h1>
+            <div class="nav-links">
+                <a href="patient-dashboard.html">Dashboard</a>
+                <a href="#" onclick="logout()">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="problem-container">
+        <div id="errorMessage" style="display: none; background: #f8d7da; color: #721c24; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #f5c6cb;"></div>
+        <div id="successMessage" style="display: none; background: #d4edda; color: #155724; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #c3e6cb;"></div>
+
+        <div class="selected-summary">
+            <h3>📋 Selected Problems</h3>
+            <p>Select the diseases and symptoms you're experiencing</p>
+            <div class="selected-tags" id="selectedTags">
+                <span style="color: #666;">No selections yet</span>
+            </div>
+        </div>
+
+        <div id="problemForm">
+            <div class="section">
+                <h2>🔍 Select Your Health Concerns</h2>
+                <p style="color: #666; margin-top: 0;">Choose from the dropdown below</p>
+                <label for="diseaseSelect" style="display: block; margin-bottom: 10px; font-weight: 600; color: #2c3e50;">Disease:</label>
+                <select id="diseaseSelect" style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 16px; margin-bottom: 15px;">
+                    <option value="">-- Select a Disease --</option>
+                </select>
+                
+                <div id="diseaseItems" style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px;"></div>
+            </div>
+
+            <div class="section">
+                <h2>🩺 Describe Your Symptoms</h2>
+                <p style="color: #666; margin-top: 0;">Select symptoms you're experiencing</p>
+                <label for="symptomSelect" style="display: block; margin-bottom: 10px; font-weight: 600; color: #2c3e50;">Symptom:</label>
+                <select id="symptomSelect" style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 16px; margin-bottom: 15px;">
+                    <option value="">-- Select a Symptom --</option>
+                </select>
+                
+                <div id="symptomItems" style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px;"></div>
+            </div>
+
+            <div class="section">
+                <button class="btn-primary" id="submitBtn" disabled onclick="submitProblemForm()" style="width: 100%; padding: 15px; font-size: 16px;">
+                    Find Recommended Doctors →
+                </button>
+            </div>
+        </div>
+
+        <!-- Recommendations Section -->
+        <div id="recommendationsSection" style="display: none;">
+            <div class="section">
+                <h2>✅ Recommended Doctors</h2>
+                <p style="color: #666; margin-top: 0;">Based on your health concerns, here are the best matching doctors:</p>
+                <div id="recommendationsList" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; margin-top: 2rem;"></div>
+            </div>
+
+            <div class="section" style="text-align: center;">
+                <button class="btn-primary" onclick="startOver()" style="background: #95a5a6; width: auto; padding: 10px 30px;">
+                    ← Start Over
+                </button>
+            </div>
+        </div>
+
+        <!-- Doctor Profile Modal -->
+        <div id="doctorModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; overflow-y: auto;">
+            <div style="background: white; margin: 20px auto; padding: 30px; border-radius: 8px; max-width: 600px; position: relative;">
+                <button onclick="closeDoctorModal()" style="position: absolute; top: 10px; right: 10px; background: none; border: none; font-size: 24px; cursor: pointer;">×</button>
+                <div id="modalContent"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="scripts/problem-selection.js"></script>
+</body>
+</html>

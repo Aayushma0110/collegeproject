@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Describe Your Problem - MediConnect</title>
+  <link rel="stylesheet" href="styles/main.css">
+  <style>
+    body {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    .problem-container {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      max-width: 900px;
+      width: 100%;
+      padding: 3rem;
+    }
+
+    .problem-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .problem-header h1 {
+      font-size: 2.5rem;
+      margin: 0 0 1rem 0;
+      color: #1a202c;
+    }
+
+    .problem-header p {
+      font-size: 1.1rem;
+      color: #666;
+      margin: 0;
+    }
+
+    .progress-steps {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 3rem;
+      position: relative;
+    }
+
+    .progress-steps::before {
+      content: '';
+      position: absolute;
+      top: 20px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: #e0e0e0;
+      z-index: 0;
+    }
+
+    .progress-step {
+      flex: 1;
+      text-align: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .progress-step-circle {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: white;
+      border: 3px solid #e0e0e0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 0.5rem;
+      font-weight: 600;
+      color: #999;
+      transition: all 0.3s ease;
+    }
+
+    .progress-step.active .progress-step-circle {
+      background: #667eea;
+      border-color: #667eea;
+      color: white;
+      transform: scale(1.1);
+    }
+
+    .progress-step.completed .progress-step-circle {
+      background: #27ae60;
+      border-color: #27ae60;
+      color: white;
+    }
+
+    .progress-step-label {
+      font-size: 0.875rem;
+      color: #666;
+      margin-top: 0.5rem;
+    }
+
+    .form-section {
+      margin-bottom: 2.5rem;
+    }
+
+    .form-section h2 {
+      font-size: 1.5rem;
+      color: #2d3748;
+      margin: 0 0 1.5rem 0;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .dropdown-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .dropdown-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .dropdown-group label {
+      font-weight: 600;
+      color: #2d3748;
+      margin-bottom: 0.5rem;
+      font-size: 0.95rem;
+    }
+
+    .dropdown-group select {
+      padding: 0.875rem;
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 1rem;
+      color: #2d3748;
+      background: white;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .dropdown-group select:hover {
+      border-color: #667eea;
+    }
+
+    .dropdown-group select:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .selected-items {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: 1rem;
+      padding: 1rem;
+      background: #f7fafc;
+      border-radius: 8px;
+      border: 1px solid #e2e8f0;
+      min-height: 50px;
+      align-content: flex-start;
+    }
+
+    .selected-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      animation: slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .selected-item button {
+      background: none;
+      border: none;
+      color: white;
+      cursor: pointer;
+      font-size: 1.2rem;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 20px;
+      height: 20px;
+    }
+
+    .selected-item button:hover {
+      opacity: 0.8;
+    }
+
+    .empty-message {
+      color: #999;
+      font-style: italic;
+      text-align: center;
+      padding: 2rem;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      margin-top: 2rem;
+      padding-top: 2rem;
+      border-top: 2px solid #e2e8f0;
+    }
+
+    .btn {
+      padding: 0.875rem 2rem;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.3s ease;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .btn-outline {
+      background: white;
+      color: #667eea;
+      border: 2px solid #667eea;
+    }
+
+    .btn-outline:hover {
+      background: #f7fafc;
+    }
+
+    .loading-spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .info-box {
+      background: #e8f5e9;
+      border-left: 4px solid #27ae60;
+      padding: 1rem;
+      border-radius: 6px;
+      margin-bottom: 1.5rem;
+      color: #2e7d32;
+    }
+
+    .error-box {
+      background: #ffebee;
+      border-left: 4px solid #c62828;
+      padding: 1rem;
+      border-radius: 6px;
+      margin-bottom: 1.5rem;
+      color: #b71c1c;
+      display: none;
+    }
+
+    .success-box {
+      background: #e8f5e9;
+      border-left: 4px solid #27ae60;
+      padding: 1rem;
+      border-radius: 6px;
+      margin-bottom: 1.5rem;
+      color: #2e7d32;
+      display: none;
+    }
+
+    .recommendations-section {
+      display: none;
+      animation: slideIn 0.5s ease;
+    }
+
+    @media (max-width: 768px) {
+      .problem-container {
+        padding: 1.5rem;
+      }
+
+      .problem-header h1 {
+        font-size: 1.8rem;
+      }
+
+      .dropdown-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .progress-steps {
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .progress-steps::before {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="problem-container">
+    <!-- Header -->
+    <div class="problem-header">
+      <h1>👩‍⚕️ Describe Your Health Concern</h1>
+      <p>Help us find the perfect doctor for your needs</p>
+    </div>
+
+    <!-- Progress Steps -->
+    <div class="progress-steps">
+      <div class="progress-step active" id="step1">
+        <div class="progress-step-circle">1</div>
+        <div class="progress-step-label">Describe Problem</div>
+      </div>
+      <div class="progress-step" id="step2">
+        <div class="progress-step-circle">2</div>
+        <div class="progress-step-label">Get Recommendations</div>
+      </div>
+      <div class="progress-step" id="step3">
+        <div class="progress-step-circle">3</div>
+        <div class="progress-step-label">Book Appointment</div>
+      </div>
+    </div>
+
+    <!-- Messages -->
+    <div class="error-box" id="errorMessage"></div>
+    <div class="success-box" id="successMessage"></div>
+
+    <!-- Info Box -->
+    <div class="info-box">
+      <strong>💡 Tip:</strong> Select diseases and/or symptoms to help us find specialists who can best treat your condition.
+    </div>
+
+    <!-- Problem Selection Form -->
+    <form id="problemForm">
+      <!-- Diseases Section -->
+      <div class="form-section">
+        <h2>🏥 Disease/Condition</h2>
+        <div class="dropdown-grid">
+          <div class="dropdown-group">
+            <label for="diseaseSelect">Select Disease or Condition</label>
+            <select id="diseaseSelect" onchange="addDisease()">
+              <option value="">-- Select a Disease --</option>
+            </select>
+          </div>
+        </div>
+        <div class="selected-items" id="diseaseItems">
+          <div class="empty-message">No diseases selected yet</div>
+        </div>
+      </div>
+
+      <!-- Symptoms Section -->
+      <div class="form-section">
+        <h2>🔍 Symptoms</h2>
+        <div class="dropdown-grid">
+          <div class="dropdown-group">
+            <label for="symptomSelect">Select Symptoms (if any)</label>
+            <select id="symptomSelect" onchange="addSymptom()">
+              <option value="">-- Select a Symptom --</option>
+            </select>
+          </div>
+        </div>
+        <div class="selected-items" id="symptomItems">
+          <div class="empty-message">No symptoms selected yet</div>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="form-actions">
+        <button type="button" class="btn btn-outline" onclick="goBack()">Go Back</button>
+        <button type="button" class="btn btn-primary" onclick="submitProblemForm()" id="submitBtn">
+          Find Doctors →
+        </button>
+      </div>
+    </form>
+
+    <!-- Recommendations Section -->
+    <div class="recommendations-section" id="recommendationsSection">
+      <div class="form-section">
+        <h2>✅ Recommended Doctors</h2>
+        <div id="recommendationsList" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;">
+          <!-- Recommendations will be loaded here -->
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="btn btn-outline" onclick="goBackToForm()">← Back to Form</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Doctor Profile Modal -->
+  <div id="doctorModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; overflow-y: auto;">
+    <div style="background: white; padding: 2rem; border-radius: 12px; max-width: 700px; width: 90%; margin: 2rem auto; max-height: 90vh; overflow-y: auto;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <h2 style="margin: 0;">Doctor Portfolio</h2>
+        <button onclick="closeModal()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #666;">&times;</button>
+      </div>
+      
+      <div id="modalContent">
+        <!-- Will be filled dynamically -->
+      </div>
+      
+      <div style="display: flex; gap: 1rem; justify-content: flex-end; padding-top: 1rem; border-top: 1px solid #e0e0e0;">
+        <button onclick="closeModal()" class="btn btn-outline">Close</button>
+        <button onclick="bookDoctor()" class="btn btn-primary">Book Appointment</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="scripts/problem-selection.js"></script>
+</body>
+</html>

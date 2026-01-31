@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Patient Dashboard - MediConnect</title>
+  <link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+  <div class="dashboard">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="logo">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+          </svg>
+          <span>MediConnect</span>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="#home" class="nav-item active" data-section="dashboard">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+            <polyline points="9 22 9 12 15 12 15 22"/>
+          </svg>
+          <span>Home</span>
+        </a>
+        <a href="#find-doctors" class="nav-item" data-section="find-doctors">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/>
+            <path d="m21 21-4.35-4.35"/>
+          </svg>
+          <span>Find Doctors</span>
+        </a>
+        <a href="#appointments" class="nav-item" data-section="appointments">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+            <line x1="16" y1="2" x2="16" y2="6"/>
+            <line x1="8" y1="2" x2="8" y2="6"/>
+            <line x1="3" y1="10" x2="21" y2="10"/>
+          </svg>
+          <span>My Appointments</span>
+        </a>
+        <a href="#book-appointment" class="nav-item" data-section="book-appointment">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 5v14M5 12h14"/>
+          </svg>
+          <span>Book Appointment</span>
+        </a>
+        <a href="#medical-records" class="nav-item" data-section="medical-records">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+          </svg>
+          <span>Medical Records</span>
+        </a>
+        <a href="#profile" class="nav-item" data-section="profile">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
+          </svg>
+          <span>Profile</span>
+        </a>
+      </nav>
+      <div class="sidebar-footer">
+        <button class="btn btn-outline btn-full" onclick="patientLogout()">Logout</button>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="dashboard-header">
+        <div>
+          <h1 id="sectionTitle">Home</h1>
+          <p id="sectionSubtitle">Welcome back, <span id="userName">Patient</span></p>
+        </div>
+        <div class="header-actions">
+          <button class="icon-btn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+            </svg>
+          </button>
+          <div class="user-avatar">
+            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Ccircle cx='20' cy='20' r='20' fill='%234f46e5'/%3E%3Ctext fill='white' font-size='18' font-family='Arial' x='50%25' y='50%25' text-anchor='middle' dy='.3em'%3EP%3C/text%3E%3C/svg%3E" alt="User">
+          </div>
+        </div>
+      </header>
+
+      <!-- Dashboard Section -->
+      <section id="dashboard-section" class="content-section active">
+        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 3rem 1.5rem; border-radius: 12px; margin-bottom: 2rem; text-align: center;">
+          <h1 style="margin: 0 0 0.5rem 0; font-size: 2.5rem;">Welcome back, <span id="patientName">Patient</span>! 👋</h1>
+          <p style="margin: 0; font-size: 1.1rem; opacity: 0.9;">Your health is our priority. Book an appointment with top doctors whenever you need</p>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-bottom: 2rem;">
+          <div class="card">
+            <div class="card-header">
+              <h3>Recommended Doctors</h3>
+              <a href="#find-doctors" class="text-link" onclick="showSection('find-doctors')">View All</a>
+            </div>
+            <div class="recommended-doctors" id="recommendedDoctors">
+              <div class="loading">Loading recommended doctors...</div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h3>Upcoming Appointments</h3>
+              <a href="#appointments" class="text-link">View All</a>
+            </div>
+            <div class="appointments-list" id="upcomingAppointments">
+              <p style="text-align: center; color: #666; padding: 1rem;">No upcoming appointments. Book one now!</p>
+            </div>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+          <div style="background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); text-align: center;">
+            <div style="font-size: 2rem; margin-bottom: 0.5rem;">🏥</div>
+            <h3 style="margin: 0 0 0.5rem 0;">Find Expert Doctors</h3>
+            <p style="margin: 0 0 1rem 0; color: #666;">Search from 1000+ verified doctors across all specialties</p>
+            <button class="btn btn-primary" onclick="showSection('find-doctors')" style="width: 100%;">Browse Doctors</button>
+          </div>
+
+          <div style="background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); text-align: center;">
+            <div style="font-size: 2rem; margin-bottom: 0.5rem;">📅</div>
+            <h3 style="margin: 0 0 0.5rem 0;">Book Appointments</h3>
+            <p style="margin: 0 0 1rem 0; color: #666;">Schedule in seconds, get confirmation instantly</p>
+            <button class="btn btn-primary" onclick="showSection('appointments')" style="width: 100%;">View Appointments</button>
+          </div>
+
+          <div style="background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); text-align: center;">
+            <div style="font-size: 2rem; margin-bottom: 0.5rem;">📋</div>
+            <h3 style="margin: 0 0 0.5rem 0;">Medical Records</h3>
+            <p style="margin: 0 0 1rem 0; color: #666;">Access your health records anytime, anywhere</p>
+            <button class="btn btn-primary" onclick="showSection('medical-records')" style="width: 100%;">View Records</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Find Doctors Section -->
+      <section id="find-doctors-section" class="content-section">
+        <div class="card" style="margin-bottom: 2rem;">
+          <div style="display: flex; align-items: center; justify-content: space-between; padding: 1.5rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; color: white;">
+            <div>
+              <h3 style="margin: 0 0 0.5rem 0;">Get Personalized Doctor Recommendations</h3>
+              <p style="margin: 0; opacity: 0.9;">Tell us about your health concerns and we'll find the perfect doctor for you</p>
+            </div>
+            <a href="problem-selection-enhanced.html" class="btn" style="background: white; color: #667eea; padding: 0.75rem 1.5rem; font-weight: 600; border-radius: 8px; text-decoration: none;">
+              Find My Doctor →
+            </a>
+          </div>
+        </div>
+        
+        <div class="card">
+          <h3 style="margin-bottom: 1rem;">Or Browse All Doctors</h3>
+          <div class="search-filters">
+            <input type="text" id="searchDoctors" placeholder="Search by name or specialization..." class="search-input">
+            <select id="specialtyFilter" class="filter-select">
+              <option value="">All Specializations</option>
+              <option value="Cardiology">Cardiology</option>
+              <option value="Dentistry">Dentistry</option>
+              <option value="Neurology">Neurology</option>
+              <option value="Pediatrics">Pediatrics</option>
+              <option value="Orthopedics">Orthopedics</option>
+            </select>
+            <button class="btn btn-primary" onclick="searchDoctors()">Search</button>
+          </div>
+        </div>
+
+        <div class="doctors-grid" id="doctorsGrid">
+          <!-- Doctors will be loaded here -->
+        </div>
+      </section>
+
+      <!-- Book Appointment Section -->
+      <section id="book-appointment-section" class="content-section">
+        <div class="card">
+          <h2 style="margin-bottom: 1.5rem;">Book an Appointment</h2>
+          
+          <!-- Step 1: Select Doctor -->
+          <div style="margin-bottom: 2rem;">
+            <h3 style="margin-bottom: 1rem;">Step 1: Select a Doctor</h3>
+            <div class="search-filters">
+              <select id="bookingSpecialty" onchange="filterDoctorsForBooking()" class="filter-select" style="margin-bottom: 1rem;">
+                <option value="">All Specializations</option>
+                <option value="Cardiology">Cardiology</option>
+                <option value="Dentistry">Dentistry</option>
+                <option value="Neurology">Neurology</option>
+                <option value="Pediatrics">Pediatrics</option>
+                <option value="Orthopedics">Orthopedics</option>
+                <option value="General Practice">General Practice</option>
+              </select>
+            </div>
+            
+            <div id="bookingDoctorsGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+              <div style="text-align: center; padding: 2rem; color: #666;">Loading doctors...</div>
+            </div>
+          </div>
+
+          <div id="appointmentBookingContainer" style="display: none;">
+            <!-- Step 2: Select Date and View Calendar -->
+            <div style="margin-bottom: 2rem;">
+              <h3 style="margin-bottom: 1rem;">Step 2: Select Date & Time</h3>
+              
+              <div style="display: grid; grid-template-columns: 300px 1fr; gap: 2rem;">
+                <!-- Calendar -->
+                <div style="background: #f8f9fa; padding: 1rem; border-radius: 8px;">
+                  <h4 style="margin-top: 0;">Doctor Calendar</h4>
+                  <div id="doctorCalendar" style="font-size: 0.9rem;">
+                    <!-- Calendar will be loaded here -->
+                  </div>
+                </div>
+
+                <!-- Slots Display -->
+                <div style="background: white;">
+                  <h4 style="margin-top: 0;">Available Slots</h4>
+                  <div id="selectedDateDisplay" style="margin-bottom: 1rem; padding: 1rem; background: #f0f7ff; border-radius: 6px; font-weight: 600; color: #667eea;"></div>
+                  
+                  <div id="slotsContainer" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 1rem;">
+                    <!-- Time slots will be loaded here -->
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Step 3: Appointment Details -->
+            <div style="margin-bottom: 2rem;">
+              <h3 style="margin-bottom: 1rem;">Step 3: Appointment Details</h3>
+              
+              <div style="background: #f8f9fa; padding: 1.5rem; border-radius: 8px;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 1.5rem;">
+                  <div>
+                    <label style="display: block; font-weight: 600; margin-bottom: 0.5rem;">Doctor</label>
+                    <p id="selectedDoctorInfo" style="margin: 0; padding: 0.75rem; background: white; border-radius: 4px; border: 1px solid #ddd;">Select a doctor</p>
+                  </div>
+                  <div>
+                    <label style="display: block; font-weight: 600; margin-bottom: 0.5rem;">Time Slot</label>
+                    <p id="selectedSlotInfo" style="margin: 0; padding: 0.75rem; background: white; border-radius: 4px; border: 1px solid #ddd;">Select a slot</p>
+                  </div>
+                </div>
+
+                <div>
+                  <label style="display: block; font-weight: 600; margin-bottom: 0.5rem;">Appointment Mode</label>
+                  <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem;">
+                    <label style="display: flex; align-items: center; cursor: pointer;">
+                      <input type="radio" name="appointmentMode" value="IN_PERSON" checked style="margin-right: 0.5rem;">
+                      <span>In-Person</span>
+                    </label>
+                    <label style="display: flex; align-items: center; cursor: pointer;">
+                      <input type="radio" name="appointmentMode" value="ONLINE" style="margin-right: 0.5rem;">
+                      <span>Online</span>
+                    </label>
+                  </div>
+                </div>
+
+                <div style="display: flex; gap: 1rem;">
+                  <button class="btn btn-outline" onclick="resetBookingForm()" style="flex: 1;">Cancel</button>
+                  <button class="btn btn-primary" onclick="confirmAppointmentBooking()" style="flex: 1;">Confirm Booking</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Appointments Section -->
+      <section id="appointments-section" class="content-section">
+        <div class="card">
+          <div class="card-header">
+            <h3>My Appointments</h3>
+            <div class="tabs">
+              <button class="tab active" onclick="filterAppointments('all')">All</button>
+              <button class="tab" onclick="filterAppointments('PENDING')">Pending</button>
+              <button class="tab" onclick="filterAppointments('CONFIRMED')">Confirmed</button>
+              <button class="tab" onclick="filterAppointments('COMPLETED')">Completed</button>
+            </div>
+          </div>
+          <div class="table-container">
+            <table class="data-table" id="appointmentsTable">
+              <thead>
+                <tr>
+                  <th>Doctor</th>
+                  <th>Specialty</th>
+                  <th>Date & Time</th>
+                  <th>Mode</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Appointments data will be loaded here -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Medical Records Section -->
+      <section id="medical-records-section" class="content-section">
+        <div class="card">
+          <div class="card-header">
+            <h3>Medical Records & Prescriptions</h3>
+          </div>
+          <div class="records-list" id="recordsList">
+            <!-- Medical records will be loaded here -->
+          </div>
+        </div>
+      </section>
+
+      <!-- Profile Section -->
+      <section id="profile-section" class="content-section">
+        <div class="card">
+          <div class="card-header">
+            <h3>Profile Information</h3>
+          </div>
+          <form id="profileForm" class="profile-form">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="profileName">Full Name</label>
+                <input type="text" id="profileName" name="name">
+              </div>
+              <div class="form-group">
+                <label for="profileEmail">Email</label>
+                <input type="email" id="profileEmail" name="email" disabled>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="profilePhone">Phone</label>
+                <input type="tel" id="profilePhone" name="phone">
+              </div>
+              <div class="form-group">
+                <label for="profileDOB">Date of Birth</label>
+                <input type="date" id="profileDOB" name="dob">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="profileGender">Gender</label>
+              <select id="profileGender" name="gender">
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="medicalHistory">Medical History</label>
+              <textarea id="medicalHistory" name="medicalHistory" rows="4"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Update Profile</button>
+          </form>
+        </div>
+      </section>
+
+      <!-- Patients Section -->
+      <section id="patients-section" class="content-section">
+        <div class="card">
+          <div class="card-header">
+            <h3>Patients</h3>
+          </div>
+          <div class="patients-grid" id="patientsGrid">
+            <!-- Patients will be loaded here -->
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Doctor Profile Modal -->
+  <div id="doctorProfileModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; overflow-y: auto;">
+    <div style="background: white; padding: 2rem; border-radius: 12px; max-width: 700px; width: 90%; margin: 2rem auto; max-height: 90vh; overflow-y: auto;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <h2 style="margin: 0;">Doctor Portfolio</h2>
+        <button onclick="closeDoctorProfileModal()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #666;">&times;</button>
+      </div>
+      
+      <div style="display: flex; gap: 1.5rem; margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 2px solid #e0e0e0;">
+        <div style="width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 2rem; color: white; font-weight: bold;">
+          <span id="profileDoctorInitial">D</span>
+        </div>
+        <div style="flex: 1;">
+          <h3 style="margin: 0 0 0.5rem 0; font-size: 1.5rem; color: #1a202c;" id="profileDoctorName">Dr. Name</h3>
+          <p style="margin: 0 0 0.5rem 0; color: #666; font-size: 1rem;" id="profileDoctorSpecialty">Specialty</p>
+          <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+            <span style="color: #ffc107; font-size: 1.25rem;">★</span>
+            <span id="profileDoctorRating" style="font-weight: 600; font-size: 1.1rem;">4.8</span>
+            <span style="color: #999;">(<span id="profileDoctorReviews">0</span> reviews)</span>
+          </div>
+          <span id="profileDoctorStatus" style="padding: 4px 12px; border-radius: 12px; font-size: 0.875rem; font-weight: 600; background: #e8f5e9; color: #2e7d32; display: inline-block;">APPROVED</span>
+        </div>
+      </div>
+      
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+        <div style="background: #f7fafc; padding: 1rem; border-radius: 8px;">
+          <p style="margin: 0 0 0.25rem 0; color: #666; font-size: 0.875rem; font-weight: 500;">Experience</p>
+          <p style="margin: 0; font-weight: 600; font-size: 1.1rem; color: #2d3748;" id="profileDoctorExperience">0 years</p>
+        </div>
+        <div style="background: #f7fafc; padding: 1rem; border-radius: 8px;">
+          <p style="margin: 0 0 0.25rem 0; color: #666; font-size: 0.875rem; font-weight: 500;">Consultation Fee</p>
+          <p style="margin: 0; font-weight: 600; font-size: 1.1rem; color: #2563eb;">₹<span id="profileDoctorFee">0</span></p>
+        </div>
+      </div>
+      
+      <div style="margin-bottom: 1.5rem;">
+        <p style="margin: 0 0 0.5rem 0; color: #2d3748; font-size: 0.875rem; font-weight: 600; text-transform: uppercase;">Education</p>
+        <p style="margin: 0; color: #4a5568; line-height: 1.6;" id="profileDoctorEducation">N/A</p>
+      </div>
+      
+      <div style="margin-bottom: 1.5rem;" id="profileCertificationsSection">
+        <p style="margin: 0 0 0.5rem 0; color: #2d3748; font-size: 0.875rem; font-weight: 600; text-transform: uppercase;">Certifications</p>
+        <p style="margin: 0; color: #4a5568; line-height: 1.6;" id="profileDoctorCertifications">N/A</p>
+      </div>
+      
+      <div style="margin-bottom: 1.5rem;" id="profileClinicSection">
+        <p style="margin: 0 0 0.5rem 0; color: #2d3748; font-size: 0.875rem; font-weight: 600; text-transform: uppercase;">Clinic</p>
+        <p style="margin: 0; color: #4a5568;" id="profileDoctorClinic">N/A</p>
+      </div>
+      
+      <div style="margin-bottom: 1.5rem;">
+        <p style="margin: 0 0 0.5rem 0; color: #2d3748; font-size: 0.875rem; font-weight: 600; text-transform: uppercase;">City</p>
+        <p style="margin: 0; color: #4a5568;" id="profileDoctorCity">N/A</p>
+      </div>
+      
+      <div style="margin-bottom: 1.5rem;" id="profileLanguagesSection">
+        <p style="margin: 0 0 0.5rem 0; color: #2d3748; font-size: 0.875rem; font-weight: 600; text-transform: uppercase;">Languages</p>
+        <div id="profileDoctorLanguages" style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+          <span style="padding: 4px 12px; background: #e0e7ff; color: #4c51bf; border-radius: 12px; font-size: 0.875rem;">N/A</span>
+        </div>
+      </div>
+      
+      <div style="margin-bottom: 1.5rem;" id="profileExpertiseSection">
+        <p style="margin: 0 0 0.5rem 0; color: #2d3748; font-size: 0.875rem; font-weight: 600; text-transform: uppercase;">Expertise</p>
+        <div id="profileDoctorExpertise" style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+          <span style="padding: 4px 12px; background: #dcfce7; color: #16a34a; border-radius: 12px; font-size: 0.875rem;">N/A</span>
+        </div>
+      </div>
+      
+      <div style="margin-bottom: 1.5rem;" id="profileModesSection">
+        <p style="margin: 0 0 0.5rem 0; color: #2d3748; font-size: 0.875rem; font-weight: 600; text-transform: uppercase;">Consultation Modes</p>
+        <div id="profileDoctorModes" style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+          <span style="padding: 4px 12px; background: #fef3c7; color: #d97706; border-radius: 12px; font-size: 0.875rem;">N/A</span>
+        </div>
+      </div>
+      
+      <div style="margin-bottom: 1.5rem;" id="profileBioSection">
+        <p style="margin: 0 0 0.5rem 0; color: #2d3748; font-size: 0.875rem; font-weight: 600; text-transform: uppercase;">About</p>
+        <p style="margin: 0; color: #4a5568; line-height: 1.6;" id="profileDoctorBio">N/A</p>
+      </div>
+      
+      <div style="margin-bottom: 1.5rem; padding: 1rem; background: #f0f9ff; border-left: 4px solid #0284c7; border-radius: 4px;">
+        <p style="margin: 0 0 0.25rem 0; color: #075985; font-size: 0.875rem; font-weight: 600;">Contact</p>
+        <p style="margin: 0; color: #0c4a6e; font-size: 0.9rem;" id="profileDoctorEmail">email@example.com</p>
+        <p style="margin: 0.25rem 0 0 0; color: #0c4a6e; font-size: 0.9rem;" id="profileDoctorPhone">N/A</p>
+      </div>
+      
+      <div style="display: flex; gap: 1rem; justify-content: flex-end; padding-top: 1rem; border-top: 1px solid #e0e0e0;">
+        <button onclick="closeDoctorProfileModal()" class="btn btn-outline">Close</button>
+        <button onclick="bookFromProfile()" class="btn btn-primary">Book Appointment</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Appointment Booking Modal -->
+  <div id="bookingModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
+    <div style="background: white; padding: 2rem; border-radius: 8px; max-width: 500px; width: 90%;">
+      <h2 style="margin: 0 0 1rem 0;">Book Appointment</h2>
+      <p style="margin-bottom: 1.5rem; color: #666;">Schedule an appointment with <strong id="bookingDoctorName"></strong></p>
+      
+      <div style="margin-bottom: 1.5rem;">
+        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Select Date & Time</label>
+        <input type="datetime-local" id="appointmentDateTime" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 4px; font-size: 1rem;" required>
+      </div>
+      
+      <div style="margin-bottom: 1.5rem;">
+        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Appointment Mode</label>
+        <select id="appointmentMode" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 4px; font-size: 1rem;">
+          <option value="IN_PERSON">In-Person Visit</option>
+          <option value="ONLINE">Online Consultation</option>
+        </select>
+      </div>
+      
+      <div style="margin-bottom: 1.5rem;">
+        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Reason for Visit (Optional)</label>
+        <textarea id="appointmentReason" rows="3" placeholder="Briefly describe your symptoms or reason for visit..." style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 4px; font-size: 1rem; font-family: inherit; resize: vertical;"></textarea>
+      </div>
+      
+      <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+        <button onclick="closeBookingModal()" class="btn btn-outline">Cancel</button>
+        <button onclick="confirmBooking()" class="btn btn-primary">Confirm Booking</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Review Modal -->
+  <div id="reviewModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
+    <div style="background: white; padding: 2rem; border-radius: 8px; max-width: 500px; width: 90%;">
+      <h2 style="margin: 0 0 1rem 0;">Leave a Review</h2>
+      <p style="margin-bottom: 1.5rem; color: #666;">Rate your experience with <strong id="reviewDoctorName"></strong></p>
+      
+      <div style="margin-bottom: 1.5rem;">
+        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Rating</label>
+        <select id="reviewRating" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 4px; font-size: 1rem;">
+          <option value="5">⭐⭐⭐⭐⭐ Excellent</option>
+          <option value="4">⭐⭐⭐⭐ Very Good</option>
+          <option value="3">⭐⭐⭐ Good</option>
+          <option value="2">⭐⭐ Fair</option>
+          <option value="1">⭐ Poor</option>
+        </select>
+      </div>
+      
+      <div style="margin-bottom: 1.5rem;">
+        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Your Review</label>
+        <textarea id="reviewComment" rows="4" placeholder="Share your experience..." style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 4px; font-size: 1rem; font-family: inherit; resize: vertical;"></textarea>
+      </div>
+      
+      <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+        <button onclick="closeReviewModal()" class="btn btn-outline">Cancel</button>
+        <button onclick="submitReview()" class="btn btn-primary">Submit Review</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="scripts/patient-dashboard.js"></script>
+</body>
+</html>

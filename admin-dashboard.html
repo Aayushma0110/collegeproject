@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - MediConnect</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f7fa; }
+        
+        .admin-dashboard { display: flex; min-height: 100vh; }
+        
+        .admin-sidebar { width: 260px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 2rem 0; position: fixed; height: 100vh; overflow-y: auto; }
+        .admin-sidebar-header { padding: 0 1.5rem 2rem; border-bottom: 1px solid rgba(255,255,255,0.2); }
+        .admin-sidebar-header h2 { font-size: 1.5rem; margin-bottom: 0.5rem; }
+        .admin-sidebar-header p { font-size: 0.875rem; opacity: 0.9; }
+        
+        .admin-nav-menu { list-style: none; padding: 1.5rem 0; }
+        .admin-nav-item { padding: 0.875rem 1.5rem; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 0.75rem; }
+        .admin-nav-item:hover { background: rgba(255,255,255,0.1); }
+        .admin-nav-item.active { background: rgba(255,255,255,0.2); border-left: 4px solid white; }
+        
+        .admin-main-content { flex: 1; margin-left: 260px; padding: 2rem; }
+        
+        .admin-header { background: white; padding: 1.5rem 2rem; border-radius: 12px; margin-bottom: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; }
+        .admin-header h1 { font-size: 1.75rem; color: #2c3e50; }
+        .admin-header-actions { display: flex; gap: 1rem; }
+        .logout-btn { background: #e74c3c; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 6px; cursor: pointer; font-weight: 600; }
+        .logout-btn:hover { background: #c0392b; }
+        
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+        .stat-card { background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .stat-card h3 { color: #666; font-size: 0.875rem; text-transform: uppercase; margin-bottom: 0.5rem; font-weight: 600; }
+        .stat-card .stat-value { font-size: 2.5rem; font-weight: bold; color: #667eea; margin-bottom: 0.5rem; }
+        .stat-card .stat-change { color: #27ae60; font-size: 0.875rem; }
+        
+        .content-section { display: none; }
+        .content-section.active { display: block; }
+        
+        .section-card { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 2rem; }
+        .section-card h2 { color: #2c3e50; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 2px solid #667eea; }
+        
+        table { width: 100%; border-collapse: collapse; }
+        table th { background: #f8f9fa; padding: 1rem; text-align: left; font-weight: 600; border-bottom: 2px solid #dee2e6; color: #2c3e50; }
+        table td { padding: 1rem; border-bottom: 1px solid #dee2e6; }
+        table tr:hover { background: #f8f9fa; }
+        
+        .btn-group { display: flex; gap: 0.5rem; }
+        .btn { padding: 0.5rem 1rem; border: none; border-radius: 6px; cursor: pointer; font-size: 0.875rem; font-weight: 600; transition: all 0.3s; }
+        .btn-primary { background: #667eea; color: white; }
+        .btn-primary:hover { background: #5568d3; }
+        .btn-success { background: #27ae60; color: white; }
+        .btn-success:hover { background: #229954; }
+        .btn-danger { background: #e74c3c; color: white; }
+        .btn-danger:hover { background: #c0392b; }
+        .btn-info { background: #3498db; color: white; }
+        .btn-info:hover { background: #2980b9; }
+        
+        .badge { padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600; display: inline-block; }
+        .badge-pending { background: #fff3cd; color: #856404; }
+        .badge-approved { background: #d4edda; color: #155724; }
+        .badge-rejected { background: #f8d7da; color: #721c24; }
+        .badge-completed { background: #cfe2ff; color: #084298; }
+        
+        @media (max-width: 768px) {
+            .admin-sidebar { width: 100%; height: auto; position: relative; }
+            .admin-main-content { margin-left: 0; }
+            .stats-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-dashboard">
+        <!-- Sidebar -->
+        <aside class="admin-sidebar">
+            <div class="admin-sidebar-header">
+                <h2>MediConnect</h2>
+                <p>Admin Panel</p>
+            </div>
+            
+            <ul class="admin-nav-menu">
+                <li class="admin-nav-item active" onclick="showAdminSection('overview')">
+                    <span>📊</span>
+                    <span>Dashboard</span>
+                </li>
+                <li class="admin-nav-item" onclick="showAdminSection('users')">
+                    <span>👥</span>
+                    <span>System Users</span>
+                </li>
+                <li class="admin-nav-item" onclick="showAdminSection('doctors')">
+                    <span>👨‍⚕️</span>
+                    <span>Doctor Management</span>
+                </li>
+                <li class="admin-nav-item" onclick="showAdminSection('appointments')">
+                    <span>📅</span>
+                    <span>Appointments</span>
+                </li>
+                <li class="admin-nav-item" onclick="showAdminSection('slots')">
+                    <span>🕐</span>
+                    <span>Doctor Slots</span>
+                </li>
+                <li class="admin-nav-item" onclick="showAdminSection('reports')">
+                    <span>📈</span>
+                    <span>Reports</span>
+                </li>
+                <li class="admin-nav-item" onclick="showAdminSection('settings')">
+                    <span>⚙️</span>
+                    <span>Settings</span>
+                </li>
+                <li class="admin-nav-item" onclick="adminLogout()">
+                    <span>🚪</span>
+                    <span>Logout</span>
+                </li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="admin-main-content">
+            <div class="admin-header">
+                <div>
+                    <h1>Welcome, <span id="adminName">Admin</span>! 👋</h1>
+                    <p style="color: #666; margin-top: 0.25rem;">Manage the healthcare platform</p>
+                </div>
+                <div class="admin-header-actions">
+                    <button class="logout-btn" onclick="adminLogout()">Logout</button>
+                </div>
+            </div>
+
+            <!-- Overview Section -->
+            <div id="overview" class="content-section active">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>Total Users</h3>
+                        <div class="stat-value" id="totalUsers">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Total Doctors</h3>
+                        <div class="stat-value" id="totalDoctors">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Total Appointments</h3>
+                        <div class="stat-value" id="totalAppointments">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Total Revenue</h3>
+                        <div class="stat-value" id="totalRevenue">₨0</div>
+                    </div>
+                </div>
+
+                <div class="section-card">
+                    <h2>Quick Actions</h2>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                        <button class="btn btn-primary" onclick="showAdminSection('users')" style="padding: 1rem; font-size: 1rem;">👥 Manage Users</button>
+                        <button class="btn btn-primary" onclick="showAdminSection('doctors')" style="padding: 1rem; font-size: 1rem;">👨‍⚕️ Manage Doctors</button>
+                        <button class="btn btn-primary" onclick="showAdminSection('appointments')" style="padding: 1rem; font-size: 1rem;">📅 View Appointments</button>
+                        <button class="btn btn-primary" onclick="showAdminSection('reports')" style="padding: 1rem; font-size: 1rem;">📈 Generate Reports</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Users Section -->
+            <div id="users" class="content-section">
+                <div class="section-card">
+                    <h2>System Users</h2>
+                    <div style="overflow-x: auto;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Role</th>
+                                    <th>Phone</th>
+                                    <th>Created At</th>
+                                </tr>
+                            </thead>
+                            <tbody id="users-table-body">
+                                <tr>
+                                    <td colspan="6" style="text-align: center; padding: 2rem;">Loading users...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Doctors Section -->
+            <div id="doctors" class="content-section">
+                <div class="section-card">
+                    <h2>Doctor Management</h2>
+                    <div style="overflow-x: auto;">
+                        <table id="doctorsTable">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Specialty</th>
+                                    <th>Experience</th>
+                                    <th>Fees (NPR)</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colspan="7" style="text-align: center; padding: 2rem;">Loading doctors...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Appointments Section -->
+            <div id="appointments" class="content-section">
+                <div class="section-card">
+                    <h2>All Appointments</h2>
+                    <div style="overflow-x: auto;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Patient</th>
+                                    <th>Doctor</th>
+                                    <th>Date & Time</th>
+                                    <th>Mode</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="appointments-table-body">
+                                <tr>
+                                    <td colspan="7" style="text-align: center; padding: 2rem;">Loading appointments...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Doctor Slots Section -->
+            <div id="slots" class="content-section">
+                <div class="section-card">
+                    <h2>Doctor Appointment Slots</h2>
+                    <div style="margin-bottom: 1.5rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                        <div>
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Select Doctor</label>
+                            <select id="filterDoctorSlots" onchange="loadDoctorSlots()" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px;">
+                                <option value="">-- All Doctors --</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Select Date</label>
+                            <input type="date" id="filterDateSlots" onchange="loadDoctorSlots()" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px;">
+                        </div>
+                        <div style="display: flex; align-items: flex-end; gap: 0.5rem;">
+                            <button class="btn btn-primary" onclick="loadDoctorSlots()" style="flex: 1; padding: 0.75rem;">Filter</button>
+                            <button class="btn btn-success" onclick="openCreateSlotModal()" style="flex: 1; padding: 0.75rem;">+ Create Slot</button>
+                            <button class="btn" onclick="openRegenerateSlotModal()" style="flex: 1; padding: 0.75rem; background: #9b59b6; color: white; border: none; border-radius: 6px; cursor: pointer;">🔄 Regenerate</button>
+                        </div>
+                    </div>
+
+                    <!-- Stats Cards -->
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+                        <div style="background: #f0f7ff; padding: 1rem; border-radius: 8px; text-align: center;">
+                            <div style="font-size: 2rem; font-weight: bold; color: #3498db;" id="totalSlotsCount">0</div>
+                            <div style="font-size: 0.875rem; color: #666;">Total Slots</div>
+                        </div>
+                        <div style="background: #f0fff4; padding: 1rem; border-radius: 8px; text-align: center;">
+                            <div style="font-size: 2rem; font-weight: bold; color: #27ae60;" id="availableSlotsCount">0</div>
+                            <div style="font-size: 0.875rem; color: #666;">Available</div>
+                        </div>
+                        <div style="background: #fff5f0; padding: 1rem; border-radius: 8px; text-align: center;">
+                            <div style="font-size: 2rem; font-weight: bold; color: #e74c3c;" id="bookedSlotsCount">0</div>
+                            <div style="font-size: 0.875rem; color: #666;">Booked</div>
+                        </div>
+                    </div>
+
+                    <div style="overflow-x: auto;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Slot ID</th>
+                                    <th>Doctor</th>
+                                    <th>Date</th>
+                                    <th>Time</th>
+                                    <th>Duration</th>
+                                    <th>Status</th>
+                                    <th>Patient (if booked)</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="slots-table-body">
+                                <tr>
+                                    <td colspan="8" style="text-align: center; padding: 2rem;">Loading slots...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reports Section -->
+            <div id="reports" class="content-section">
+                <div class="section-card">
+                    <h2>Payment Reports</h2>
+                    <div style="overflow-x: auto;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Appointment ID</th>
+                                    <th>Amount (NPR)</th>
+                                    <th>Status</th>
+                                    <th>Method</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody id="reports-table-body">
+                                <tr>
+                                    <td colspan="6" style="text-align: center; padding: 2rem;">Loading reports...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings Section -->
+            <div id="settings" class="content-section">
+                <div class="section-card">
+                    <h2>System Settings</h2>
+                    <form style="max-width: 500px;">
+                        <div style="margin-bottom: 1.5rem;">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Platform Name</label>
+                            <input type="text" value="MediConnect" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px;">
+                        </div>
+                        <div style="margin-bottom: 1.5rem;">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Default Consultation Fee (NPR)</label>
+                            <input type="number" value="1500" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px;">
+                        </div>
+                        <div style="margin-bottom: 1.5rem;">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Maximum Booking Days Ahead</label>
+                            <input type="number" value="30" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px;">
+                        </div>
+                        <button type="button" class="btn btn-primary">Save Settings</button>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Doctor Verification Modal -->
+    <div id="verificationModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; padding: 20px;">
+        <div style="background: white; border-radius: 12px; padding: 2rem; max-width: 500px; width: 100%; max-height: 90vh; overflow-y: auto; box-shadow: 0 10px 40px rgba(0,0,0,0.2);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <h2 style="margin: 0; color: #2c3e50;">Doctor Details</h2>
+                <button onclick="closeVerificationModal()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #666;">×</button>
+            </div>
+
+            <div id="verificationModalBody">
+                <p style="text-align: center; color: #666;">Loading doctor details...</p>
+            </div>
+
+            <div id="verificationModalActions" style="display: flex; gap: 1rem; margin-top: 2rem; border-top: 1px solid #eee; padding-top: 1.5rem;">
+                <button class="btn btn-success" onclick="approveDoctor()" style="flex: 1; padding: 0.75rem;">✓ Approve</button>
+                <button class="btn btn-danger" onclick="rejectDoctor()" style="flex: 1; padding: 0.75rem;">✗ Reject</button>
+                <button class="btn" onclick="closeVerificationModal()" style="flex: 1; padding: 0.75rem; background: #95a5a6; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="scripts/admin-dashboard.js"></script>
+</body>
+</html>

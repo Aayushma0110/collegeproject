@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Dashboard - Enhanced</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f7fa; }
+        
+        .dashboard { display: flex; min-height: 100vh; }
+        
+        .sidebar { width: 250px; background: #2c3e50; color: white; padding: 20px 0; }
+        .sidebar-header { padding: 0 20px 20px; border-bottom: 1px solid #34495e; }
+        .sidebar-header h2 { font-size: 18px; margin-bottom: 5px; }
+        .sidebar-header .status { font-size: 12px; }
+        
+        .nav-menu { list-style: none; padding: 20px 0; }
+        .nav-item { padding: 12px 20px; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 10px; }
+        .nav-item:hover { background: #34495e; }
+        .nav-item.active { background: #3498db; }
+        
+        .main-content { flex: 1; padding: 30px; }
+        .top-bar { background: white; padding: 20px; border-radius: 8px; margin-bottom: 30px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        
+        .content-section { display: none; }
+        .content-section.active { display: block; }
+        
+        .section-card { background: white; padding: 25px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .section-card h3 { margin-bottom: 20px; color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px; }
+        
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 500; color: #2c3e50; }
+        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; }
+        .form-group textarea { min-height: 100px; resize: vertical; }
+        
+        .day-schedule { margin-bottom: 15px; padding: 15px; background: #f8f9fa; border-radius: 8px; }
+        .day-schedule label { font-weight: 600; margin-bottom: 10px; display: block; }
+        .time-inputs { display: flex; gap: 10px; align-items: center; margin-top: 10px; }
+        .time-inputs input { flex: 1; }
+        
+        .slot-tag { display: inline-block; background: #3498db; color: white; padding: 6px 12px; border-radius: 20px; margin: 5px; font-size: 13px; }
+        
+        .expertise-checkbox { display: block; padding: 8px; margin: 5px 0; background: #f8f9fa; border-radius: 4px; cursor: pointer; }
+        .expertise-checkbox:hover { background: #e9ecef; }
+        .expertise-checkbox input { margin-right: 8px; }
+        
+        .btn { padding: 12px 24px; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; transition: all 0.3s; }
+        .btn-primary { background: #3498db; color: white; }
+        .btn-primary:hover { background: #2980b9; }
+        .btn-sm { padding: 6px 12px; font-size: 12px; }
+        .btn-small { padding: 8px 16px; font-size: 13px; background: #95a5a6; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        
+        .badge { padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600; }
+        .badge-approved { background: #d4edda; color: #155724; }
+        .badge-pending { background: #fff3cd; color: #856404; }
+        .badge-rejected { background: #f8d7da; color: #721c24; }
+        .badge-confirmed { background: #d4edda; color: #155724; }
+        .badge-completed { background: #cfe2ff; color: #084298; }
+        
+        table { width: 100%; border-collapse: collapse; }
+        table th { background: #f8f9fa; padding: 12px; text-align: left; font-weight: 600; border-bottom: 2px solid #dee2e6; }
+        table td { padding: 12px; border-bottom: 1px solid #dee2e6; }
+        table tr:hover { background: #f8f9fa; }
+        
+        .checkbox-group { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
+        
+        /* Upcoming Appointments Styles */
+        .upcoming-appointment-card { 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+            color: white; 
+            padding: 1.5rem; 
+            border-radius: 8px; 
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .appointment-time { 
+            font-size: 2rem; 
+            font-weight: bold; 
+            min-width: 80px;
+        }
+        
+        .appointment-details {
+            flex: 1;
+            margin-left: 1.5rem;
+        }
+        
+        .appointment-details h4 {
+            margin: 0 0 0.25rem 0;
+            font-size: 1.1rem;
+        }
+        
+        .appointment-details p {
+            margin: 0.25rem 0;
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+        
+        .appointment-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .btn-icon { 
+            padding: 0.5rem 1rem; 
+            border: none; 
+            border-radius: 4px; 
+            cursor: pointer; 
+            font-size: 0.85rem;
+            white-space: nowrap;
+        }
+        
+        .btn-info { background: rgba(255,255,255,0.2); color: white; }
+        .btn-info:hover { background: rgba(255,255,255,0.3); }
+        
+        /* Patient Modal Styles */
+        .modal { 
+            display: none; 
+            position: fixed; 
+            z-index: 1000; 
+            left: 0; 
+            top: 0; 
+            width: 100%; 
+            height: 100%; 
+            background-color: rgba(0,0,0,0.5);
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal.show {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #3498db;
+        }
+        
+        .modal-header h2 {
+            margin: 0;
+            color: #2c3e50;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+        }
+        
+        .modal-close:hover {
+            color: #2c3e50;
+        }
+        
+        .patient-info-section {
+            margin-bottom: 1.5rem;
+        }
+        
+        .patient-info-section h3 {
+            color: #2c3e50;
+            border-bottom: 2px solid #e9ecef;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+        
+        .info-item {
+            padding: 0.75rem;
+            background: #f8f9fa;
+            border-radius: 4px;
+        }
+        
+        .info-item label {
+            font-weight: 600;
+            color: #2c3e50;
+            display: block;
+            margin-bottom: 0.25rem;
+            font-size: 0.85rem;
+        }
+        
+        .info-item p {
+            margin: 0;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2 id="doctorName">Dr. John Doe</h2>
+                <div class="status" id="doctorStatus">
+                    <span class="badge badge-pending">PENDING</span>
+                </div>
+            </div>
+            
+            <ul class="nav-menu">
+                <li class="nav-item active" data-section="dashboard">📊 Dashboard</li>
+                <li class="nav-item" data-section="profile">👤 Profile Setup</li>
+                <li class="nav-item" data-section="availability">📅 Availability</li>
+                <li class="nav-item" data-section="appointments">📋 Appointments</li>
+                <li class="nav-item" data-section="reviews">⭐ Reviews</li>
+                <li class="nav-item" onclick="doctorLogout()">🚪 Logout</li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 3rem 1.5rem; border-radius: 12px; margin-bottom: 2rem; text-align: center;">
+                <h1 style="margin: 0 0 0.5rem 0; font-size: 2.5rem;">Welcome back, <span id="doctorNameHeader">Dr. Doctor</span>! 👋</h1>
+                <p style="margin: 0; font-size: 1.1rem; opacity: 0.9;">Manage your practice and connect with patients efficiently</p>
+            </div>
+
+            <!-- Dashboard Section -->
+            <div id="dashboard-section" class="content-section active">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+                    <div style="background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); text-align: center;">
+                        <div style="font-size: 2rem; margin-bottom: 0.5rem;">👨‍⚕️</div>
+                        <h3 style="margin: 0 0 0.5rem 0;">Complete Your Profile</h3>
+                        <p style="margin: 0 0 1rem 0; color: #666;">Add your qualifications and specialties</p>
+                        <button class="btn btn-primary" onclick="showSection('profile')" style="width: 100%;">Setup Profile</button>
+                    </div>
+
+                    <div style="background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); text-align: center;">
+                        <div style="font-size: 2rem; margin-bottom: 0.5rem;">📅</div>
+                        <h3 style="margin: 0 0 0.5rem 0;">Set Availability</h3>
+                        <p style="margin: 0 0 1rem 0; color: #666;">Define your working hours and slots</p>
+                        <button class="btn btn-primary" onclick="showSection('availability')" style="width: 100%;">Set Hours</button>
+                    </div>
+
+                    <div style="background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); text-align: center;">
+                        <div style="font-size: 2rem; margin-bottom: 0.5rem;">📋</div>
+                        <h3 style="margin: 0 0 0.5rem 0;">Appointments</h3>
+                        <p style="margin: 0 0 1rem 0; color: #666;">Manage patient appointments</p>
+                        <button class="btn btn-primary" onclick="showSection('appointments')" style="width: 100%;">View Appointments</button>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+                    <div style="background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                        <h3 style="margin: 0 0 1.5rem 0; color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 0.75rem;">Quick Stats</h3>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                            <div style="background: #e3f2fd; padding: 1rem; border-radius: 8px; text-align: center;">
+                                <div style="font-size: 24px; font-weight: bold; color: #1976d2;">0</div>
+                                <div style="color: #666; font-size: 0.9rem;">Today's Appointments</div>
+                            </div>
+                            <div style="background: #d4edda; padding: 1rem; border-radius: 8px; text-align: center;">
+                                <div style="font-size: 24px; font-weight: bold; color: #155724;">0</div>
+                                <div style="color: #666; font-size: 0.9rem;">This Month</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                        <h3 style="margin: 0 0 1.5rem 0; color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 0.75rem;">Recent Appointments</h3>
+                        <div id="doctorRecentAppointments" style="max-height: 300px; overflow-y: auto;">
+                            <p style="text-align: center; color: #666;">No appointments yet</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 2rem;">
+                    <h3 style="margin: 0 0 1.5rem 0; color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 0.75rem;">📅 Upcoming Appointments (Next 7 Days)</h3>
+                    <div id="upcomingAppointmentsList" style="max-height: 500px; overflow-y: auto;">
+                        <p style="text-align: center; color: #666; padding: 2rem;">Loading upcoming appointments...</p>
+                    </div>
+                </div>
+
+                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 2rem; border-radius: 12px; margin-top: 2rem; text-align: center;">
+                    <h2 style="margin: 0 0 0.5rem 0;">Build Your Practice</h2>
+                    <p style="margin: 0 0 1.5rem 0; opacity: 0.9;">Complete these steps to start receiving patient appointments</p>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; text-align: left;">
+                        <div style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 8px;">
+                            <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">1️⃣</div>
+                            <h4 style="margin: 0 0 0.25rem 0;">Profile Setup</h4>
+                            <p style="margin: 0; font-size: 0.9rem; opacity: 0.9;">Add your qualifications</p>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 8px;">
+                            <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">2️⃣</div>
+                            <h4 style="margin: 0 0 0.25rem 0;">Set Hours</h4>
+                            <p style="margin: 0; font-size: 0.9rem; opacity: 0.9;">Define availability</p>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 8px;">
+                            <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">3️⃣</div>
+                            <h4 style="margin: 0 0 0.25rem 0;">Get Approved</h4>
+                            <p style="margin: 0; font-size: 0.9rem; opacity: 0.9;">Wait for admin approval</p>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 8px;">
+                            <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">4️⃣</div>
+                            <h4 style="margin: 0 0 0.25rem 0;">See Patients</h4>
+                            <p style="margin: 0; font-size: 0.9rem; opacity: 0.9;">Start receiving bookings</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Section -->
+            <div id="profile-section" class="content-section">
+                <div class="section-card">
+                    <h3>Doctor Profile Setup</h3>
+                    <form onsubmit="event.preventDefault(); saveProfile();">
+                        <div class="form-group">
+                            <label>Education *</label>
+                            <input type="text" id="education" placeholder="e.g., MBBS, MD (Cardiology)" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Certifications</label>
+                            <input type="text" id="certifications" placeholder="e.g., NMC Certified">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Clinic Name</label>
+                            <input type="text" id="clinicName" placeholder="Your clinic or hospital name">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Languages (comma-separated)</label>
+                            <input type="text" id="languages" placeholder="e.g., English, Nepali, Hindi">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Bio *</label>
+                            <textarea id="bio" placeholder="Tell patients about your experience and expertise" required></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label>City *</label>
+                            <input type="text" id="city" placeholder="e.g., Kathmandu" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Years of Experience</label>
+                            <input type="number" id="experience" min="0" placeholder="e.g., 10">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Consultation Fees (NPR)</label>
+                            <input type="number" id="fees" min="0" placeholder="e.g., 1500">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Consultation Modes</label>
+                            <div class="checkbox-group">
+                                <label><input type="checkbox" name="consultationMode" value="IN_PERSON"> In-Person</label>
+                                <label><input type="checkbox" name="consultationMode" value="ONLINE"> Online</label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Areas of Expertise (Select all that apply)</label>
+                            <div id="expertiseOptions" class="checkbox-group">
+                                <!-- Dynamically loaded -->
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">💾 Save Profile</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Availability Section -->
+            <div id="availability-section" class="content-section">
+                <div class="section-card">
+                    <h3>Set Weekly Availability</h3>
+                    <p style="color: #666; margin-bottom: 20px;">Define your working hours for each day of the week. Slots will be generated automatically.</p>
+
+                    <div class="form-group">
+                        <label>Slot Duration (minutes)</label>
+                        <select id="slotDuration">
+                            <option value="15">15 minutes</option>
+                            <option value="30" selected>30 minutes</option>
+                            <option value="45">45 minutes</option>
+                            <option value="60">60 minutes</option>
+                        </select>
+                    </div>
+
+                    <div id="weeklyScheduleContainer">
+                        <!-- Dynamically generated -->
+                    </div>
+
+                    <button class="btn btn-primary" onclick="saveAvailability()">💾 Save Availability</button>
+                </div>
+            </div>
+
+            <!-- Appointments Section -->
+            <div id="appointments-section" class="content-section">
+                <div class="section-card">
+                    <h3>My Appointments</h3>
+                    <table id="appointmentsTable">
+                        <thead>
+                            <tr>
+                                <th>Patient</th>
+                                <th>Date & Time</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td colspan="4" style="text-align: center;">Loading...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Reviews Section -->
+            <div id="reviews-section" class="content-section">
+                <div class="section-card">
+                    <h3>Patient Reviews</h3>
+                    <div id="reviewsStats" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-bottom: 20px;">
+                        <div style="background: #fff3cd; padding: 20px; border-radius: 8px; text-align: center;">
+                            <div style="font-size: 32px; font-weight: bold; color: #856404;" id="avgRating">-</div>
+                            <div style="color: #666;">Average Rating</div>
+                        </div>
+                        <div style="background: #d4edda; padding: 20px; border-radius: 8px; text-align: center;">
+                            <div style="font-size: 32px; font-weight: bold; color: #155724;" id="totalReviews">0</div>
+                            <div style="color: #666;">Total Reviews</div>
+                        </div>
+                    </div>
+                    <div id="reviewsList">
+                        <p style="text-align: center; color: #666;">Loading reviews...</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Patient Information Modal -->
+    <div id="patientModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="patientModalTitle">Patient Information</h2>
+                <button class="modal-close" onclick="closePatientModal()">×</button>
+            </div>
+
+            <div class="patient-info-section">
+                <h3>Personal Information</h3>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <label>Full Name</label>
+                        <p id="patientName">-</p>
+                    </div>
+                    <div class="info-item">
+                        <label>Email</label>
+                        <p id="patientEmail">-</p>
+                    </div>
+                    <div class="info-item">
+                        <label>Age</label>
+                        <p id="patientAge">-</p>
+                    </div>
+                    <div class="info-item">
+                        <label>Gender</label>
+                        <p id="patientGender">-</p>
+                    </div>
+                    <div class="info-item">
+                        <label>Phone</label>
+                        <p id="patientPhone">-</p>
+                    </div>
+                    <div class="info-item">
+                        <label>Marital Status</label>
+                        <p id="patientMaritalStatus">-</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="patient-info-section">
+                <h3>Medical History</h3>
+                <div class="info-item" style="grid-column: 1 / -1;">
+                    <label>Previous Conditions</label>
+                    <p id="patientMedicalHistory">Not available</p>
+                </div>
+            </div>
+
+            <div class="patient-info-section">
+                <h3>Appointment History</h3>
+                <div id="appointmentHistory" style="display: grid; grid-template-columns: 1fr; gap: 0.75rem;">
+                    <p style="color: #666; text-align: center;">Loading...</p>
+                </div>
+            </div>
+
+            <div style="text-align: right; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid #e9ecef;">
+                <button class="btn btn-primary" onclick="closePatientModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="scripts/doctor-dashboard-enhanced.js"></script>
+</body>
+</html>

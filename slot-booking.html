@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Appointment - Doctor Appointment</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <style>
+        .booking-container {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+        .doctor-info-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+        .doctor-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 32px;
+            font-weight: bold;
+        }
+        .calendar-section {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .date-selector {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding: 10px 0;
+            margin: 20px 0;
+        }
+        .date-card {
+            min-width: 100px;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .date-card:hover {
+            border-color: #3498db;
+            background: #f8f9fa;
+        }
+        .date-card.selected {
+            border-color: #3498db;
+            background: #e3f2fd;
+        }
+        .date-card.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .date-day {
+            font-size: 12px;
+            color: #666;
+            text-transform: uppercase;
+        }
+        .date-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin: 5px 0;
+        }
+        .date-month {
+            font-size: 12px;
+            color: #666;
+        }
+        .slots-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .slot-card {
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .slot-card:hover:not(.booked):not(.selected) {
+            border-color: #3498db;
+            background: #f8f9fa;
+        }
+        .slot-card.selected {
+            border-color: #3498db;
+            background: #3498db;
+            color: white;
+        }
+        .slot-card.booked {
+            background: #f0f0f0;
+            color: #999;
+            cursor: not-allowed;
+            border-color: #ddd;
+        }
+        .slot-time {
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .problem-summary {
+            background: #fff3cd;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .btn-book {
+            width: 100%;
+            padding: 15px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-book:hover:not(:disabled) {
+            background: #2980b9;
+        }
+        .btn-book:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
+        }
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #7f8c8d;
+        }
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #3498db;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <h1>🏥 Doctor Appointment System</h1>
+            <div class="nav-links">
+                <a href="patient-dashboard.html">Dashboard</a>
+                <a href="#" onclick="logout()">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="booking-container">
+        <a href="recommended-doctors.html" class="back-link">← Back to recommendations</a>
+
+        <div class="doctor-info-card" id="doctorInfo">
+            <div class="loading">Loading doctor information...</div>
+        </div>
+
+        <div class="problem-summary" id="problemSummary" style="display: none;">
+            <h3>📋 Your Health Concerns</h3>
+            <div id="problemList"></div>
+        </div>
+
+        <div class="calendar-section">
+            <h2>📅 Select Date</h2>
+            <div class="date-selector" id="dateSelector"></div>
+        </div>
+
+        <div class="calendar-section">
+            <h2>🕐 Select Time Slot</h2>
+            <div id="slotsLoading" class="loading">Select a date to view available slots</div>
+            <div class="slots-grid" id="slotsGrid" style="display: none;"></div>
+            <div id="noSlots" style="display: none; text-align: center; padding: 40px; color: #7f8c8d;">
+                <p>😕 No slots available for this date</p>
+                <p>Please select another date</p>
+            </div>
+        </div>
+
+        <div class="calendar-section">
+            <button class="btn-book" id="bookBtn" disabled onclick="confirmBooking()">
+                Select a slot to continue
+            </button>
+        </div>
+    </div>
+
+    <script src="scripts/slot-booking.js"></script>
+</body>
+</html>
