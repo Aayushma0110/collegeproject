@@ -1,0 +1,4 @@
+-- AlterTable
+ALTER TABLE "User" ADD COLUMN     "phone" TEXT,
+ALTER COLUMN "role" SET DEFAULT 'DOCTOR',
+ALTER COLUMN "phoneNumber" SET DEFAULT ARRAY[]::TEXT[];

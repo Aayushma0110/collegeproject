@@ -109,7 +109,7 @@ export const getDoctorReviews = async (req, res) => {
       return res.status(400).json({ error: 'doctorId is required' });
     }
 
-    // code for fetch reviews + patient info (and appointment info if needed)
+    // code for fetch reviews + reviewer info (and appointment info if needed)
     const [reviews, total] = await Promise.all([
       prisma.review.findMany({
         where: { doctorId: Number(doctorId) },
@@ -117,21 +117,33 @@ export const getDoctorReviews = async (req, res) => {
         skip,
         take: perPage,
         include: {
-          patient: { select: { id: true, name: true, profilePicture_: true } },
-          appointment: { select: { id: true, scheduledAt: true } }, // optional
+          reviewer: { select: { id: true, name: true, profilePicture: true } },
+          appointment: { select: { id: true, date: true, startTime: true } }, // optional
         },
       }),
       prisma.review.count({ where: { doctorId: Number(doctorId) } }),
     ]);
 
-    // it is Also used as  optionally include the stored averageRating from doctor
+    // it is Also used as  optionally include the stored averageRating from doctor profile
     const doctor = await prisma.user.findUnique({
-      where: { id: doctorId },
-      select: { id: true, ratings: true },
+      where: { id: Number(doctorId) },
+      select: { 
+        id: true, 
+        name: true,
+        doctorProfile: {
+          select: {
+            ratings: true
+          }
+        }
+      },
     });
 
     return res.json({
-      doctor: doctor ? { id: doctor.id, ratings: doctor.ratings } : null,
+      doctor: doctor ? { 
+        id: doctor.id, 
+        name: doctor.name,
+        ratings: doctor.doctorProfile?.ratings || 0 
+      } : null,
       meta: {
         total,
         page,

@@ -100,3 +100,43 @@ export const deletePayment = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+
+export const getPaymentStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const payment = await prisma.payment.findUnique({
+      where: { id: Number(id) },
+      select: { status: true, method: true, amount: true }
+    });
+
+    if (!payment) return res.status(404).json({ error: "Payment not found" });
+    res.json({ status: payment.status, method: payment.method, amount: payment.amount });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+
+export const refundPayment = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { reason } = req.body;
+
+    const payment = await prisma.payment.findUnique({ where: { id: Number(id) } });
+    if (!payment) return res.status(404).json({ error: "Payment not found" });
+
+    if (payment.status === "REFUNDED") {
+      return res.status(400).json({ error: "Payment already refunded" });
+    }
+
+    const updated = await prisma.payment.update({
+      where: { id: Number(id) },
+      data: { status: "REFUNDED" }
+    });
+
+    res.json({ message: "Payment refunded successfully", payment: updated, reason });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};

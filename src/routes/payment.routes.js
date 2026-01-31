@@ -4,7 +4,9 @@ import {
   getPayments,
   getPaymentById,
   updatePayment,
-  deletePayment
+  deletePayment,
+  getPaymentStatus,
+  refundPayment
 } from "../controller/payment.controller.js";
 import { auth} from "../middleware/auth.js";
 const router = express.Router();
@@ -14,5 +16,7 @@ router.get("/", auth, getPayments);
 router.get("/:id", auth, getPaymentById);    
 router.put("/:id", auth, updatePayment);  
 router.delete("/:id", auth, deletePayment);  
+router.get("/:id/status", auth, getPaymentStatus);
+router.post("/:id/refund", auth, refundPayment);
 
 export default router;

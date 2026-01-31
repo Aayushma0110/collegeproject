@@ -7,81 +7,213 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+
 model User {
-  id                  Int           @id @default(autoincrement())
-  name                String
-  email               String        @unique
-  password            String
+  id              Int      @id @default(autoincrement())
+  name            String
+  email           String   @unique
+  password        String
 
-  dateOfBirth         DateTime?
-  gender              String?
-  medicalHistory      String?
+  role            Role
+  phoneNumber     String[]
+  profilePicture  String?
 
-  specialty           String?
-  experience          Int?
-  fees                Float?
-  ratings             Float?
-  availability        Json?  
-  scheduledAt         DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
-  createdAt           DateTime      @default(now())
-  updatedAt           DateTime      @updatedAt
+  // Relations
+  doctorProfile        DoctorProfile?
+  patientProfile       PatientProfile?
+  availabilities       DoctorAvailability[]
+  doctorSlots          Slot[] @relation("DoctorSlots")
+  doctorAppointments   Appointment[] @relation("DoctorAppointments")
+  patientAppointments  Appointment[] @relation("PatientAppointments")
+  reviewsGiven         Review[] @relation("ReviewsGiven")
+  reviewsReceived      Review[] @relation("ReviewsReceived")
+  reminders            Reminder[]
+}
 
-  status              DoctorStatus  @default(PENDING)
-  role                Role
-  isApproved          Boolean  
-  phoneNumber         String[]
-  profilePicture_     String[]
 
-  doctorAppointments  Appointment[] @relation("DoctorAppointments")
-  patientAppointments Appointment[] @relation("PatientAppointments")
-  reviewsGiven        Review[]       @relation("ReviewsGiven")
-  reviewsReceived     Review[]       @relation("ReviewsReceived")
+model PatientProfile {
+  id            Int     @id @default(autoincrement())
+  userId        Int     @unique
+  medicalHistory String?
+  dateOfBirth   DateTime?
+  gender        String?
+  address       String?
+
+  user          User    @relation(fields: [userId], references: [id])
+  symptoms      PatientSymptom[]
+}
+
+
+model DoctorProfile {
+  id          Int     @id @default(autoincrement())
+  userId      Int     @unique
+
+  degree      String?
+  nmcNumber   String?  @unique
+  institute   String?
+  specialty   String?
+  experience  Int?
+  bio         String?
+  fees        Float?
+  ratings     Float   @default(0)
+  location    String?
+  city        String?
+
+  status      DoctorStatus @default(PENDING)
+
+  user        User    @relation(fields: [userId], references: [id])
+}
+
+model DoctorAvailability {
+  id        Int      @id @default(autoincrement())
+  doctorId  Int
+
+  day       Day
+  startTime String   // "09:00"
+  endTime   String   // "09:30"
+  isActive  Boolean  @default(true)
+
+  doctor    User     @relation(fields: [doctorId], references: [id])
+
+  @@unique([doctorId, day, startTime, endTime])
 }
 
 
 model Appointment {
   id          Int      @id @default(autoincrement())
+
+  doctorId    Int
+  patientId   Int
+  slotId      Int?
+
+  date        DateTime
+  startTime   String
+  endTime     String
+
   mode        Mode     @default(IN_PERSON)
   status      Status   @default(PENDING)
-  patientId   Int
-  doctorId    Int
+
   createdAt   DateTime @default(now())
-  duration    Int?
-  scheduledAt DateTime
+
   doctor      User     @relation("DoctorAppointments", fields: [doctorId], references: [id])
   patient     User     @relation("PatientAppointments", fields: [patientId], references: [id])
+  slot        Slot?    @relation(fields: [slotId], references: [id])
+
   payment     Payment?
   review      Review?
+  reminder    Reminder?
 }
+
+model Slot {
+  id        Int      @id @default(autoincrement())
+  doctorId  Int
+  
+  date      DateTime
+  startTime DateTime
+  endTime   DateTime
+  
+  isBooked  Boolean  @default(false)
+  duration  Int      @default(60) // in minutes
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  doctor    User     @relation("DoctorSlots", fields: [doctorId], references: [id])
+  appointments Appointment[]
+}
+
+
 
 model Payment {
   id            Int           @id @default(autoincrement())
+  appointmentId Int           @unique
+
   amount        Float
   method        PaymentMethod
   status        PaymentStatus @default(PENDING)
   transactionId String?
-  appointmentId Int           @unique
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
-  appointment   Appointment   @relation(fields: [appointmentId], references: [id])
-}
-model Review {
-  id            Int      @id @default(autoincrement())
-  rating        Int      // A rating from 1 to 5
-  comment       String?
-  
-  appointment   Appointment @relation(fields: [appointmentId], references: [id])
-  appointmentId Int      @unique // One review per appointment
-
-  reviewer      User     @relation("ReviewsGiven", fields: [reviewerId], references: [id])
-  reviewerId    Int      // The patient who wrote the review
-
-  doctor        User     @relation("ReviewsReceived", fields: [doctorId], references: [id])
-  doctorId      Int      // The doctor being reviewed
 
   createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  appointment   Appointment @relation(fields: [appointmentId], references: [id])
 }
+
+
+model Review {
+  id            Int      @id @default(autoincrement())
+  appointmentId Int      @unique
+  reviewerId    Int
+  doctorId      Int
+
+  rating        Int
+  comment       String?
+
+  createdAt     DateTime @default(now())
+
+  appointment   Appointment @relation(fields: [appointmentId], references: [id])
+  reviewer      User        @relation("ReviewsGiven", fields: [reviewerId], references: [id])
+  doctor        User        @relation("ReviewsReceived", fields: [doctorId], references: [id])
+}
+
+
+model Reminder {
+  id            Int      @id @default(autoincrement())
+  userId        Int
+  appointmentId Int      @unique
+
+  remindAt      DateTime
+  isSent        Boolean  @default(false)
+  type          ReminderType
+
+  user          User        @relation(fields: [userId], references: [id])
+  appointment   Appointment @relation(fields: [appointmentId], references: [id])
+}
+
+
+model Symptom {
+  id        Int     @id @default(autoincrement())
+  name      String  @unique
+
+  diseases        DiseaseSymptom[]
+  patientSymptoms PatientSymptom[]
+}
+
+
+model Disease {
+  id         Int     @id @default(autoincrement())
+  name       String  @unique
+  specialty  String  @default("General Medicine")
+
+  symptoms   DiseaseSymptom[]
+}
+
+
+model DiseaseSymptom {
+  diseaseId  Int
+  symptomId  Int
+
+  disease    Disease  @relation(fields: [diseaseId], references: [id])
+  symptom    Symptom  @relation(fields: [symptomId], references: [id])
+
+  @@id([diseaseId, symptomId])
+}
+
+model PatientSymptom {
+  id          Int      @id @default(autoincrement())
+  patientId   Int
+  symptomId   Int
+  createdAt   DateTime @default(now())
+
+  patient     PatientProfile @relation(fields: [patientId], references: [id])
+  symptom     Symptom        @relation(fields: [symptomId], references: [id])
+
+  @@unique([patientId, symptomId])
+}
+
 
 enum Role {
   PATIENT
@@ -101,12 +233,15 @@ enum Status {
   COMPLETED
 }
 
+enum DoctorStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
 enum PaymentMethod {
   CASH
-  CARD
-  STRIPE
   ESEWA
-  KHALTI
 }
 
 enum PaymentStatus {
@@ -116,8 +251,16 @@ enum PaymentStatus {
   REFUNDED
 }
 
-enum DoctorStatus {
-  PENDING
-  APPROVED
-  REJECTED
+enum Day {
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+  SUNDAY
+}
+
+enum ReminderType {
+  EMAIL
 }
